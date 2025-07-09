@@ -1,3 +1,5 @@
+import wmi
+from screeninfo import get_monitors
 import cv2
 import numpy as np
 import time
@@ -10,32 +12,12 @@ THRESHOLD_PIXELS = 100000  # Number of changed pixels to trigger detection
 FRAME_DELAY = 1  # Delay between frames in seconds
 SHOW_DEBUG_WINDOW = False  # Set True to visualize diff frame
 display_dict = {}
+monitor_dict = {}
 
 
 # # detecting display devices using WMI
 obj = wmi.WMI().Win32_PnPEntity(ConfigManagerErrorCode=0)
 displays = [x for x in obj if 'DISPLAY' in str(x)]
-# for index, item in enumerate(displays):
-#     print(f"Display {index}: {item}")
-#     if (item.Name.startswith("Microsoft")): # Skip Microsoft displays
-#         continue
-#     display_dict[f"display{index}"] = item.Name
-
-# from screeninfo import get_monitors
-# for index, m in enumerate(get_monitors()):
-#     print("Monitor found:", len(get_monitors()))
-#     print(f"  Name: {display_dict[f'display{index+1}']}")
-#     print(f"  Width: {m.width}, Height: {m.height}")
-#     print(f"  Position: ({m.x}, {m.y})")
-#     print(f"  Is primary: {m.is_primary}")
-#     print(m)
-#     # print(str(m.x) + " " + str(m.y) + " " + str(m.width) + " " + str(m.height))
-
-
-
-
-import wmi
-from screeninfo import get_monitors
 
 # Get monitor EDID-based info from WmiMonitorID (hardware-accurate)
 wmi_monitors = wmi.WMI(namespace='wmi').WmiMonitorID()
@@ -49,7 +31,7 @@ def decode_edid_field(field):
 # Prepare readable monitor names from EDID
 edid_names = []
 for monitor in wmi_monitors:
-    print(f"Monitor EDID: {monitor}")
+    # print(f"Monitor EDID: {monitor}")
     
     # Try to get a meaningful name in order of preference
     user_friendly_name = decode_edid_field(monitor.UserFriendlyName)
@@ -100,29 +82,33 @@ for i, monitor in enumerate(monitors):
         serial = info["serial"] or "Unknown"
     else:
         name = manufacturer = serial = "Unknown"
+    # Store monitor info in a dictionary
+    monitor_dict[i] = {
+        "name": name,
+        "manufacturer": manufacturer,
+        "serial": serial,
+        "width": monitor.width,
+        "height": monitor.height,
+        "resolution": f"{monitor.width}x{monitor.height}",
+        "x": monitor.x,
+        "y": monitor.y,
+        "is_primary": monitor.is_primary
+    }
+    
+    # print(f"Monitor {i + 1} {monitor}:")
+    # print(f"  Name        : {name}")
+    # print(f"  Manufacturer: {manufacturer}")
+    # print(f"  Serial No.  : {serial}")
+    # print(f"  Resolution  : {monitor.width}x{monitor.height}")
+    # print(f"  Position    : ({monitor.x}, {monitor.y})")
+    # print(f"  Primary     : {monitor.is_primary}\n")
 
-    print(f"Monitor {i + 1} {monitor}:")
-    print(f"  Name        : {name}")
-    print(f"  Manufacturer: {manufacturer}")
-    print(f"  Serial No.  : {serial}")
-    print(f"  Resolution  : {monitor.width}x{monitor.height}")
-    print(f"  Position    : ({monitor.x}, {monitor.y})")
-    print(f"  Primary     : {monitor.is_primary}\n")
-
-
-
-
-
-
-
-
-
-
-# Define screen capture region (full screen by default)
-monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}  # Change if needed
-
-previous_gray = None
-sct = mss()
+    # Define screen capture region (full screen by default)
+    monitor = {"top": monitor_dict[i]["x"], "left": monitor_dict[i]["y"], "width": monitor_dict[i]["width"], "height": monitor_dict[i]["height"]}  # Change if needed
+    
+    # print(f"Monitor {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
+    previous_gray = None
+    sct = mss()
 
 print("Starting screen change detector using MSS... Press Ctrl+C to stop.")
 
