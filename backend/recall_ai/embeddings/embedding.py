@@ -53,7 +53,7 @@ def generate_image_embeddings_from_textfiles(image_text_directory='images_taken'
     return embeddings_array, all_image_lines
 
 
-def find_similar_logs(query_text, embeddings_array, log_lines, top_k=5):
+def find_similar_images(query_text, embeddings_array, image_lines, top_k=5):
     embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
     query_embedding = embeddings_model.embed_query(query_text)
     query_embedding = np.array(query_embedding).reshape(1, -1)
@@ -64,7 +64,7 @@ def find_similar_logs(query_text, embeddings_array, log_lines, top_k=5):
     results = []
     for idx in top_indices:
         results.append({
-            'log_line': log_lines[idx],
+            'image_line': image_lines[idx],
             'similarity': float(similarities[idx]),
             'index': int(idx)
         })
