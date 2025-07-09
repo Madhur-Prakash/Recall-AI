@@ -1,0 +1,13 @@
+fastapi[standard]
+motor
+kafka-python
+aioredis
+concurrent_log_handler
+Pillow
+pyautogui
+opencv-python
+numpy
+wmi
+pytesseract
+mss
+screeninfo

@@ -1,0 +1,7 @@
+rec
+__pycache__
+.vscode
+node_modules
+logs
+*.png
+.env
