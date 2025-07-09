@@ -4,14 +4,14 @@ import os
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 def setup_logging():
-    logger = logging.getLogger("patient_public_profile")
+    logger = logging.getLogger("recallAi")
     if not logger.hasHandlers():
         logger.setLevel(logging.INFO)
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
 
         file_handler = ConcurrentRotatingFileHandler(
-            os.path.join(log_dir, "patient_public_profile.log"),
+            os.path.join(log_dir, "recallAi.log"),
             maxBytes=10000,
             backupCount=500
         )

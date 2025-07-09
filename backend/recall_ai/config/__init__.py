@@ -1,1 +1,1 @@
-# This is the init file for the config directory
+# This is the init file for the root directory

@@ -8,9 +8,10 @@ import numpy as np
 import time
 from datetime import datetime
 from mss import mss
-from recall_ai.src.recall import ocr_image
+from recall_ai.helpers.recall import ocr_image
 import wmi
 from helpers.utils import setup_logging
+from embeddings.embedding import generate_image_embeddings_from_textfiles
 
 # Configuration
 THRESHOLD_PIXELS = 100000  # Number of changed pixels to trigger detection
@@ -20,6 +21,8 @@ monitor_dict = {}
 capture_regions = []
 previous_frames = {}
 logging = setup_logging()
+output_dir = 'images_taken'
+os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
 
 # detecting display devices using WMI
 obj = wmi.WMI().Win32_PnPEntity(ConfigManagerErrorCode=0)
@@ -78,8 +81,8 @@ for monitor in wmi_monitors:
 monitors = get_monitors()
 
 # Print monitor info
-print(f"Monitors detected via screeninfo: {len(monitors)}\n")
-print("Monitor Details", monitors)
+# print(f"Monitors detected via screeninfo: {len(monitors)}\n")
+# print("Monitor Details", monitors)
 
 for i, monitor in enumerate(monitors):
     # Match EDID info if available (best-effort by index)
@@ -112,9 +115,9 @@ for i, monitor in enumerate(monitors):
         "height": monitor.height
     }
     capture_regions.append(capture_region)
-    logging.info("Gathered monitor info: %s", monitor_dict[i])
+    logging.info("Gathered monitor info: %s")
 
-    print(f"Monitor Details: {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
+    # print(f"Monitor Details: {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
     
     # Initialize previous frame for each monitor
     previous_frames[i] = None
@@ -144,18 +147,23 @@ try:
                     logging.info(f"Screen change detected! ({changed_pixels} pixels changed) in monitor {i + 1} - {monitor_dict[i]['name']}")
                     print(f"[{datetime.now().strftime('%H:%M:%S')}] Screen change detected! ({changed_pixels} pixels changed) in monitor {i + 1} - {monitor_dict[i]['name']}")
                     img_name = f"image_{i + 1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                    file_path = os.path.join(output_dir, img_name)
 
                     # Use MSS to capture the actual image
                     screenshot = sct.grab(capture_regions[i])
                     img = np.array(screenshot)
-                    cv2.imwrite(img_name, cv2.cvtColor(img, cv2.COLOR_BGRA2BGR))  # Convert from BGRA to BGR
+                    cv2.imwrite(file_path, cv2.cvtColor(img, cv2.COLOR_BGRA2BGR))  # Convert from BGRA to BGR
 
                     print(f"Screenshot saved as {img_name}")
                     logging.info(f"Screenshot saved as {img_name} for monitor {i + 1} - {monitor_dict[i]['name']}")
-                    res = ocr_image(img_name)
+                    res = ocr_image(file_path)
                     if res:
+                        # Save OCR result to a text file
+                        text_file_path = os.path.join(output_dir, f"ocr_{i + 1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+                        with open(text_file_path, 'w', encoding='utf-8') as f:
+                            f.write(res)
+                        os.remove(file_path) # delete the image after OCR
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
-                        print(f"ocr res from image of {monitor_dict[i]['name']}: {res}")
                     else:
                         logging.error(f"OCR failed to extract text from image of {monitor_dict[i]['name']}.")
                         print("OCR failed to extract text.")
