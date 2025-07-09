@@ -3,18 +3,6 @@ import requests
 import os
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
-def create_new_log(log_type: str, message: str, head: str):
-    url = "http://127.0.0.1:8000/backend/create_new_logs"
-    log = {
-         "log_type": log_type,
-         "message": message}
-    headers = {
-        "X-Source-Endpoint": head}
-    
-    resp = requests.post(url, json=log, headers=headers)
-    return resp
-
-
 def setup_logging():
     logger = logging.getLogger("patient_public_profile")
     if not logger.hasHandlers():

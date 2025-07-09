@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import wmi
 from screeninfo import get_monitors
 import cv2
@@ -5,16 +8,18 @@ import numpy as np
 import time
 from datetime import datetime
 from mss import mss
+from recall_ai.src.recall import ocr_image
 import wmi
+from helpers.utils import setup_logging
 
 # Configuration
 THRESHOLD_PIXELS = 100000  # Number of changed pixels to trigger detection
-FRAME_DELAY = 1  # Delay between frames in seconds
-SHOW_DEBUG_WINDOW = False  # Set True to visualize diff frame
+FRAME_DELAY = 4  # Delay between frames in seconds
 display_dict = {}
 monitor_dict = {}
 capture_regions = []
 previous_frames = {}
+logging = setup_logging()
 
 # detecting display devices using WMI
 obj = wmi.WMI().Win32_PnPEntity(ConfigManagerErrorCode=0)
@@ -107,7 +112,8 @@ for i, monitor in enumerate(monitors):
         "height": monitor.height
     }
     capture_regions.append(capture_region)
-    
+    logging.info("Gathered monitor info: %s", monitor_dict[i])
+
     print(f"Monitor Details: {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
     
     # Initialize previous frame for each monitor
@@ -120,35 +126,45 @@ print("Starting screen change detector using MSS... Press Ctrl+C to stop.")
 try:
     while True:
         # FIXED: Loop through all monitors
-        for monitor in range(len(monitors)):
+        for i, monitor in enumerate(monitors):
             # Capture screenshot for current monitor
-            screenshot = sct.grab(capture_regions[monitor])
+            screenshot = sct.grab(capture_regions[i])
             frame = np.array(screenshot)
 
             # Convert to grayscale for comparison
             gray_current = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            if previous_frames[monitor] is not None:
-                diff = cv2.absdiff(previous_frames[monitor], gray_current)
+            if previous_frames[i] is not None:
+                diff = cv2.absdiff(previous_frames[i], gray_current)
                 _, thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
 
                 changed_pixels = np.sum(thresh) // 255
 
                 if changed_pixels > THRESHOLD_PIXELS:
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] Screen change detected! ({changed_pixels} pixels changed) in monitor {monitor + 1} - {monitor_dict[monitor]['name']}")
+                    logging.info(f"Screen change detected! ({changed_pixels} pixels changed) in monitor {i + 1} - {monitor_dict[i]['name']}")
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] Screen change detected! ({changed_pixels} pixels changed) in monitor {i + 1} - {monitor_dict[i]['name']}")
+                    img_name = f"image_{i + 1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
 
-                if SHOW_DEBUG_WINDOW:
-                    cv2.imshow(f"Change Detection - Monitor {monitor + 1}", thresh)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break
+                    # Use MSS to capture the actual image
+                    screenshot = sct.grab(capture_regions[i])
+                    img = np.array(screenshot)
+                    cv2.imwrite(img_name, cv2.cvtColor(img, cv2.COLOR_BGRA2BGR))  # Convert from BGRA to BGR
 
-            previous_frames[monitor] = gray_current.copy()
+                    print(f"Screenshot saved as {img_name}")
+                    logging.info(f"Screenshot saved as {img_name} for monitor {i + 1} - {monitor_dict[i]['name']}")
+                    res = ocr_image(img_name)
+                    if res:
+                        logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
+                        print(f"ocr res from image of {monitor_dict[i]['name']}: {res}")
+                    else:
+                        logging.error(f"OCR failed to extract text from image of {monitor_dict[i]['name']}.")
+                        print("OCR failed to extract text.")
+
+
+            previous_frames[i] = gray_current.copy()
         
         time.sleep(FRAME_DELAY)
 
 except KeyboardInterrupt:
+    logging.info("Screen change detection stopped by user.")
     print("\nStopped by user.")
-
-finally:
-    if SHOW_DEBUG_WINDOW:
-        cv2.destroyAllWindows()
