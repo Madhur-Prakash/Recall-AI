@@ -13,9 +13,10 @@ FRAME_DELAY = 1  # Delay between frames in seconds
 SHOW_DEBUG_WINDOW = False  # Set True to visualize diff frame
 display_dict = {}
 monitor_dict = {}
+capture_regions = []
+previous_frames = {}
 
-
-# # detecting display devices using WMI
+# detecting display devices using WMI
 obj = wmi.WMI().Win32_PnPEntity(ConfigManagerErrorCode=0)
 displays = [x for x in obj if 'DISPLAY' in str(x)]
 
@@ -67,11 +68,13 @@ for monitor in wmi_monitors:
         "serial": serial_display,
         "product_code": product_code or "Unknown"
     })
+
 # Get screen resolutions and positions
 monitors = get_monitors()
 
 # Print monitor info
 print(f"Monitors detected via screeninfo: {len(monitors)}\n")
+print("Monitor Details", monitors)
 
 for i, monitor in enumerate(monitors):
     # Match EDID info if available (best-effort by index)
@@ -82,6 +85,7 @@ for i, monitor in enumerate(monitors):
         serial = info["serial"] or "Unknown"
     else:
         name = manufacturer = serial = "Unknown"
+    
     # Store monitor info in a dictionary
     monitor_dict[i] = {
         "name": name,
@@ -95,47 +99,51 @@ for i, monitor in enumerate(monitors):
         "is_primary": monitor.is_primary
     }
     
-    # print(f"Monitor {i + 1} {monitor}:")
-    # print(f"  Name        : {name}")
-    # print(f"  Manufacturer: {manufacturer}")
-    # print(f"  Serial No.  : {serial}")
-    # print(f"  Resolution  : {monitor.width}x{monitor.height}")
-    # print(f"  Position    : ({monitor.x}, {monitor.y})")
-    # print(f"  Primary     : {monitor.is_primary}\n")
-
-    # Define screen capture region (full screen by default)
-    monitor = {"top": monitor_dict[i]["x"], "left": monitor_dict[i]["y"], "width": monitor_dict[i]["width"], "height": monitor_dict[i]["height"]}  # Change if needed
+    # FIXED: Create capture region for each monitor and store in list
+    capture_region = {
+        "top": monitor.y,     # Note: corrected x/y assignment
+        "left": monitor.x,    # Note: corrected x/y assignment  
+        "width": monitor.width,
+        "height": monitor.height
+    }
+    capture_regions.append(capture_region)
     
-    # print(f"Monitor {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
-    previous_gray = None
-    sct = mss()
+    print(f"Monitor Details: {i + 1} - {monitor_dict[i]['name']} ({monitor_dict[i]['resolution']}) at ({monitor_dict[i]['x']}, {monitor_dict[i]['y']})")
+    
+    # Initialize previous frame for each monitor
+    previous_frames[i] = None
+
+sct = mss()
 
 print("Starting screen change detector using MSS... Press Ctrl+C to stop.")
 
 try:
     while True:
-        # Capture screenshot using MSS
-        screenshot = sct.grab(monitor)
-        frame = np.array(screenshot)
+        # FIXED: Loop through all monitors
+        for monitor in range(len(monitors)):
+            # Capture screenshot for current monitor
+            screenshot = sct.grab(capture_regions[monitor])
+            frame = np.array(screenshot)
 
-        # Convert to grayscale for comparison
-        gray_current = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # Convert to grayscale for comparison
+            gray_current = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        if previous_gray is not None:
-            diff = cv2.absdiff(previous_gray, gray_current)
-            _, thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
+            if previous_frames[monitor] is not None:
+                diff = cv2.absdiff(previous_frames[monitor], gray_current)
+                _, thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
 
-            changed_pixels = np.sum(thresh) // 255
+                changed_pixels = np.sum(thresh) // 255
 
-            if changed_pixels > THRESHOLD_PIXELS:
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] Screen change detected! ({changed_pixels} pixels changed)")
+                if changed_pixels > THRESHOLD_PIXELS:
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] Screen change detected! ({changed_pixels} pixels changed) in monitor {monitor + 1} - {monitor_dict[monitor]['name']}")
 
-            if SHOW_DEBUG_WINDOW:
-                cv2.imshow("Change Detection", thresh)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+                if SHOW_DEBUG_WINDOW:
+                    cv2.imshow(f"Change Detection - Monitor {monitor + 1}", thresh)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
 
-        previous_gray = gray_current.copy()
+            previous_frames[monitor] = gray_current.copy()
+        
         time.sleep(FRAME_DELAY)
 
 except KeyboardInterrupt:
