@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 import os
-import time
+from fastapi.responses import StreamingResponse
 from fastapi import FastAPI, status, HTTPException, APIRouter
 from recall_ai.helpers.utils import setup_logging
 from langchain_groq import ChatGroq
@@ -65,11 +65,9 @@ Question: {input}
 async def chat_with_logs(query: str):
     global vectorstore, llm, embeddings_model
 
-    # Check model initialization
     if not llm or not embeddings_model:
         return {"error": "Models not initialized yet."}
 
-    # Load vectorstore if not loaded
     if vectorstore is None:
         try:
             load_path = os.path.join(os.getcwd(), "img_vector_store")
@@ -80,18 +78,21 @@ async def chat_with_logs(query: str):
             return {"error": "Vector store not found. Please run /store to initialize it."}
 
     try:
-        # Retrieval logic
-        document_chain = create_stuff_documents_chain(llm, prompt)
-        retriever = vectorstore.as_retriever()
-        retrieval_chain = create_retrieval_chain(retriever, document_chain)
+        # Retrieve top k context
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        docs = retriever.invoke(query)
+        context = "\n".join([doc.page_content for doc in docs])
 
-        response = retrieval_chain.invoke({"input": query})
-        answer = response.get("answer")
+        full_prompt = prompt.format_messages(context=context, input=query)
 
-        if not answer:
-            return {"error": "No answer generated."}
+        # Stream response from LLM
+        def stream():
+            # Use regular for loop instead of async for
+            for chunk in llm.stream(full_prompt):
+                yield chunk.content
 
-        return {"response": answer}
+        return StreamingResponse(stream(), media_type="text/plain")
+
     except Exception as e:
-        logger.error(f"Retrieval error: {str(e)}")
-        return {"error": "An error occurred during retrieval."}
+        logger.error(f"Streaming chat error: {str(e)}")
+        return {"error": str(e)}
