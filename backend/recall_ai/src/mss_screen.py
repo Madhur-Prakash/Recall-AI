@@ -173,6 +173,8 @@ try:
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
                         logging.info(f"Sending OCR text result to Kafka topic 'embeddings'")
                         producer.send('vector_embeddings', {'image_path': file_path, 'text': res})
+                        producer.flush()
+                        print(f"✅ OCR text extracted and sent to Kafka for monitor {i + 1} - {monitor_dict[i]['name']}")
                     else:
                         logging.error(f"OCR failed to extract text from image of {monitor_dict[i]['name']}.")
                         print("OCR failed to extract text.")
