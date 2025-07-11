@@ -1,30 +1,13 @@
 import os
 import glob
-from dotenv import load_dotenv
 from recall_ai.helpers.utils import setup_logging
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.prompts import ChatPromptTemplate
 
-load_dotenv()
-os.environ['GROQ_API_KEY'] = os.getenv('GROQ_API_KEY')
-groq_api_key = os.getenv('GROQ_API_KEY')
 
-llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
 logger = setup_logging()
 
-prompt = ChatPromptTemplate.from_template(
-    """
-    Answer the question based on the context only.
-    Please provide the most accurate response based on the question
-    <context>
-    {context}
-    <context>
-    Question:{input}
-    """
-)
 
 vectorstore = None
 embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")

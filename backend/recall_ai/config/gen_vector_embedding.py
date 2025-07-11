@@ -31,9 +31,9 @@ def insert_batch(batch):
                 logger.error("⚠️No embeddings generated.")
                 print("⚠️ No embeddings generated.")
                 return {"error": "No embeddings generated"}
-            print(f"✅ Inserted {len(batch)} OCRs successfully.")
+            print(f"✅ Inserted {len(batch)} OCRs text successfully.")
             logger.info(f"Inserted {len(batch)} OCRs successfully.")
-            return {"embeddings": embeddings.tolist(), "total_lines": len(image_text_lines)}
+            return {"total_lines": len(image_text_lines)}
         except Exception as e:
             logger.error(f"Failed to insert OCR data: {e}")
             print(f"⚠️ Insert failed. Retrying... Attempt {attempt+1}")
@@ -45,7 +45,7 @@ def insert_batch(batch):
 
 print("Worker started, waiting for text files...")
 async def run_kafka():
-    BATCH_SIZE = 2 
+    BATCH_SIZE = 10
     IMAGE_TEXT_BATCH = []  # Temporary storage for batch
     try:
         for message in consumer:
