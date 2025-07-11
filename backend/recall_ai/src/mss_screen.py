@@ -10,7 +10,7 @@ import numpy as np
 import time
 from datetime import datetime
 from mss import mss
-from backend.recall_ai.helpers.screen_shot import ocr_image
+from recall_ai.helpers.screen_shot import ocr_image
 import wmi
 from helpers.utils import setup_logging
 
