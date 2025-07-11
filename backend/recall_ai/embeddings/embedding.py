@@ -14,7 +14,7 @@ full_output_folder = os.path.join(base_dir, output_folder)
 os.makedirs(full_output_folder, exist_ok=True)  # Ensure output directory exists
 
 
-def generate_image_embeddings_from_textfiles(image_text_directory='images_taken', output_folder=output_folder):
+def generate_image_embeddings_from_textfiles(image_text_directory='images_taken'):
     embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
     image_text_files = glob.glob(os.path.join(base_dir, image_text_directory, "*.txt"))
 
