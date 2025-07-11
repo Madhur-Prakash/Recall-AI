@@ -13,7 +13,6 @@ from mss import mss
 from recall_ai.helpers.recall import ocr_image
 import wmi
 from helpers.utils import setup_logging
-from embeddings.embedding import generate_image_embeddings_from_textfiles
 
 # Configuration
 THRESHOLD_PIXELS = 100000  # Number of changed pixels to trigger detection
