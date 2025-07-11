@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from recall_ai.helpers.utils import setup_logging
-from recall_ai.embeddings.store_vector_embedding import store_embeddings
+from recall_ai.vector_embeddings.store_vector_embedding import store_embeddings
 import traceback
 import json
 import time
