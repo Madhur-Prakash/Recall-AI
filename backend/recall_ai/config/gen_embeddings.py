@@ -21,7 +21,7 @@ consumer = KafkaConsumer(
 
 
 logger = setup_logging()
-output_dir = 'images_taken'
+
 
 def insert_batch(batch):
     for attempt in range(3):  # Retry 3 times

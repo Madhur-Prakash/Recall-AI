@@ -1,7 +1,9 @@
+import json
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import wmi
+from kafka import KafkaProducer
 from screeninfo import get_monitors
 import cv2
 import numpy as np
@@ -23,6 +25,11 @@ previous_frames = {}
 logging = setup_logging()
 output_dir = 'images_taken'
 os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
+
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
 
 # detecting display devices using WMI
 obj = wmi.WMI().Win32_PnPEntity(ConfigManagerErrorCode=0)
@@ -164,6 +171,8 @@ try:
                             f.write(res)
                         os.remove(file_path) # delete the image after OCR
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
+                        logging.info(f"Sending OCR text result to Kafka topic 'embeddings'")
+                        producer.send('vector_embeddings', {'image_path': file_path, 'text': res})
                     else:
                         logging.error(f"OCR failed to extract text from image of {monitor_dict[i]['name']}.")
                         print("OCR failed to extract text.")
