@@ -23,32 +23,13 @@ vectorstore = None
 
 logger = setup_logging()
 
-# Lifespan context manager
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global llm, embeddings_model
-    logger.info("Starting application with lifespan handler...")
+# Initialize Groq LLM
+groq_api_key = os.getenv('GROQ_API_KEY')
+os.environ['GROQ_API_KEY'] = groq_api_key
+llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
 
-    try:
-        t0 = time.time()
-
-        # Initialize Groq LLM
-        groq_api_key = os.getenv('GROQ_API_KEY')
-        os.environ['GROQ_API_KEY'] = groq_api_key
-        llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
-        logger.info("Groq LLM initialized.")
-
-        # Initialize HuggingFace embeddings
-        embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
-        logger.info("Embeddings model loaded.")
-
-        logger.info(f"Startup completed in {time.time() - t0:.2f} seconds.")
-    except Exception as e:
-        logger.error(f"Startup error: {e}")
-
-    yield
-
-    logger.info("Shutting down application...")
+# Initialize HuggingFace embeddings
+embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
 
 # Prompt template
 prompt = ChatPromptTemplate.from_template("""

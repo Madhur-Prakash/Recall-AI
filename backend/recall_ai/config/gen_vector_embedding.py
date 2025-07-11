@@ -3,11 +3,18 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from recall_ai.helpers.utils import setup_logging
-from recall_ai.vector_embeddings.store_vector_embedding import store_embeddings
 import traceback
 import json
 import time
-import asyncio
+
+import time
+print("Before importing store_embeddings")
+st = time.time()
+from recall_ai.vector_embeddings.store_vector_embedding import store_embeddings
+print("After importing store_embeddings")
+fn = time.time() - st
+print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
+
 
 # Kafka Consumer
 consumer = KafkaConsumer(
@@ -25,15 +32,15 @@ logger = setup_logging()
 def insert_batch(batch):
     for attempt in range(3):  # Retry 3 times
         try:
-            embeddings, image_text_lines = store_embeddings()
+            res = store_embeddings()
             logger.info(f"Inserted batch of {len(batch)} OCRs.")
-            if embeddings is None:
+            if res is None:
                 logger.error("⚠️No embeddings generated.")
                 print("⚠️ No embeddings generated.")
                 return {"error": "No embeddings generated"}
             print(f"✅ Inserted {len(batch)} OCRs text successfully.")
             logger.info(f"Inserted {len(batch)} OCRs successfully.")
-            return {"total_lines": len(image_text_lines)}
+            return {"success": True, "count": len(batch)}
         except Exception as e:
             logger.error(f"Failed to insert OCR data: {e}")
             print(f"⚠️ Insert failed. Retrying... Attempt {attempt+1}")
@@ -44,8 +51,8 @@ def insert_batch(batch):
     return False
 
 print("Worker started, waiting for text files...")
-async def run_kafka():
-    BATCH_SIZE = 10
+def run_kafka():
+    BATCH_SIZE = 2
     IMAGE_TEXT_BATCH = []  # Temporary storage for batch
     try:
         for message in consumer:
@@ -65,6 +72,4 @@ async def run_kafka():
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run_kafka())
-    loop.close()
+    run_kafka()

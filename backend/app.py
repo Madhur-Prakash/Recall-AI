@@ -5,14 +5,20 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
-from recall_ai.src.recall import lifespan, recall
+from recall_ai.src.recall import recall
 
 
 # Load environment variables
 load_dotenv()
 
-# FastAPI app with lifespan
-app = FastAPI(lifespan=lifespan)
+# FastAPI app 
+app = FastAPI(
+    title="RecallAI API",
+    description="API for RecallAI, a system for managing and retrieving information from images.",
+    version="1.0.0",
+    docs_url="/docs",  # Custom docs URL
+    redoc_url="/redoc"  # Custom ReDoc URL
+)
 
 # Middleware
 app.add_middleware(
