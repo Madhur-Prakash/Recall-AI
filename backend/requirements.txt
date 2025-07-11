@@ -21,3 +21,6 @@ torchvision>=0.5
 faiss-cpu
 sentence-transformers
 itsdangerous
+speechrecognition
+pyaudio
+pyttsx3
