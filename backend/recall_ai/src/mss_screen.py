@@ -168,7 +168,8 @@ try:
                         text_file_path = os.path.join(output_dir, f"ocr_{i + 1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
                         with open(text_file_path, 'w', encoding='utf-8') as f:
                             f.write(res)
-                        os.remove(file_path) # delete the image after OCR
+                        if (os.path.exists(file_path)):
+                            os.remove(file_path) # delete the image after OCR
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
                         logging.info(f"Sending OCR text result to Kafka topic 'embeddings'")
                         producer.send('vector_embeddings', {'image_path': file_path, 'text': res})
