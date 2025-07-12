@@ -1,12 +1,10 @@
-from contextlib import asynccontextmanager
 import os
 from fastapi.responses import StreamingResponse
-from fastapi import FastAPI, status, HTTPException, APIRouter
+from fastapi import status, HTTPException, APIRouter
+from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model, get_llm
 from recall_ai.helpers.utils import setup_logging
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
@@ -22,14 +20,6 @@ embeddings_model = None
 vectorstore = None
 
 logger = setup_logging()
-
-# Initialize Groq LLM
-groq_api_key = os.getenv('GROQ_API_KEY')
-os.environ['GROQ_API_KEY'] = groq_api_key
-llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
-
-# Initialize HuggingFace embeddings
-embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
 
 # Prompt template
 prompt = ChatPromptTemplate.from_template("""
@@ -53,6 +43,7 @@ Never infer or fabricate details that are not explicitly stated or reasonably in
 
 Do not repeat the question unless explicitly asked to paraphrase. Do not use unnecessary filler or be overly verbose unless a detailed explanation is requested. Use a clear, concise, and conversational tone. When summarizing or listing items, use bullet points or numbered lists. For direct answers, use single, well-structured sentences.
 
+If no context is provided, respond with: "I don't have any context to answer that question." 
 Always maintain a polite, friendly, and human-like tone. Strictly adhere to all the rules stated above in every response.
 <context>
 {context}
@@ -61,38 +52,48 @@ Question: {input}
 """)
 
 
-@recall.get("/chat")
+@recall.get("/chat", status_code=status.HTTP_200_OK)
 async def chat_with_logs(query: str):
-    global vectorstore, llm, embeddings_model
-
-    if not llm or not embeddings_model:
-        return {"error": "Models not initialized yet."}
+    llm = get_llm()
+    embeddings_model = get_embeddings_model()
+    vectorstore = get_vectorstore()
 
     if vectorstore is None:
         try:
             load_path = os.path.join(os.getcwd(), "img_vector_store")
             vectorstore = FAISS.load_local(load_path, embeddings_model, allow_dangerous_deserialization=True)
             logger.info("Vector store loaded successfully.")
+        
         except Exception as e:
-            logger.error(f"Failed to load vector store: {str(e)}")
-            return {"error": "Vector store not found. Please run /store to initialize it."}
+            logger.error(f"Failed to load vector store: {e}")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector store not found. Please run /store to initialize it.")
+
 
     try:
-        # Retrieve top k context
+        # Step 1: Embed and retrieve top-k chunks
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-        docs = retriever.invoke(query)
-        context = "\n".join([doc.page_content for doc in docs])
+        query_emb = f"query: {query}"
+        docs = retriever.invoke(query_emb)
 
+        if not docs:
+            logger.warning("No relevant documents found for query.")
+            return {"response": "No relevant information found in the context."}
+
+        # Step 2: Format the context
+        context = "\n".join([doc.page_content for doc in docs])
         full_prompt = prompt.format_messages(context=context, input=query)
 
-        # Stream response from LLM
+        # Step 3: Stream LLM output
         def stream():
-            # Use regular for loop instead of async for
-            for chunk in llm.stream(full_prompt):
-                yield chunk.content
+            try:
+                for chunk in llm.stream(full_prompt):
+                    yield chunk.content
+            except Exception as e:
+                logger.error(f"Error during LLM streaming: {e}")
+                yield "❌ Error occurred during LLM response generation."
 
         return StreamingResponse(stream(), media_type="text/plain")
 
     except Exception as e:
-        logger.error(f"Streaming chat error: {str(e)}")
-        return {"error": str(e)}
+        logger.error(f"❌ Streaming chat error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

@@ -1,21 +1,26 @@
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import glob
 from datetime import datetime
 import shutil
+from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model
 from recall_ai.helpers.utils import setup_logging
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 logger = setup_logging()
 
-vectorstore = None
-embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
+vectorstore = get_vectorstore()
+embeddings_model = get_embeddings_model()
 
 def store_embeddings(img_dir: str = "images_taken/"):
     try:
         img_files = glob.glob(os.path.join(img_dir, "*.txt"))
         logger.info(f"✅ Found {len(img_files)} img -> text files")
+        if (len(img_files) == 0):
+            logger.error("❌ No image files found to process.")
+            return {"error": "No image files found to process."}
 
         raw_lines = []
         for img_file in img_files:
@@ -33,10 +38,9 @@ def store_embeddings(img_dir: str = "images_taken/"):
         # Smart chunking
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         documents = text_splitter.create_documents(raw_lines)
-        chunked_texts = [doc.page_content for doc in documents]
+        chunked_texts = [f"passage: {doc.page_content}" for doc in documents]
         logger.info(f"Chunked into {len(chunked_texts)} documents")
 
-        global vectorstore
         vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
 
         if os.path.exists(os.path.join(vector_store_path, "index.faiss")):

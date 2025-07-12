@@ -1,6 +1,4 @@
-import json
 import cv2 # used for image processing
-from kafka import KafkaProducer
 import pytesseract # used for OCR
 import traceback
 import os
@@ -10,12 +8,6 @@ from helpers.utils import setup_logging
 
 logging = setup_logging()
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
-# Kafka Producer
-producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-)
 
 # OCR
 def ocr_image(image_path):
@@ -33,10 +25,6 @@ def ocr_image(image_path):
 
         full_text = " ".join(text.split())
         logging.info("OCR text extracted")  # Log first 100 characters for brevity
-
-        #  sending OCR result to Kafka
-        producer.send('ocr_results', {'image_path': image_path, 'text': full_text})
-        producer.flush()  # Ensure the message is sent immediately
         return full_text
 
         
