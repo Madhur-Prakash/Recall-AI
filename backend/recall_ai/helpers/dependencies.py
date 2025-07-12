@@ -1,6 +1,7 @@
 
 import os
 import time
+from functools import cache
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
@@ -12,31 +13,25 @@ load_dotenv()
 
 logger = setup_logging()
 
-llm = None
-embeddings_model = None
 vectorstore = None
 
-
+@cache
 def get_llm():
-    global llm
-    if llm is None:
-        logger.info("Initializing LLM model...")
-        start = time.time()
-        groq_api_key = os.getenv('GROQ_API_KEY')
-        os.environ['GROQ_API_KEY'] = groq_api_key
-        llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
-        logger.info(f"LLM initialized in {time.time() - start:.2f} seconds")
+    logger.info("Initializing LLM model...")
+    start = time.time()
+    groq_api_key = os.getenv('GROQ_API_KEY')
+    llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
+    logger.info(f"LLM initialized in {time.time() - start:.2f} seconds")
     return llm
 
 
+@cache
 def get_embeddings_model():
-    global embeddings_model
-    if embeddings_model is None:
-        logger.info("Initializing embeddings model...")
-        start = time.time()
-        embeddings_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
-        logger.info(f"Embeddings model initialized in {time.time() - start:.2f} seconds")
-    return embeddings_model
+    logger.info("Initializing embeddings model...")
+    start = time.time()
+    model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    logger.info(f"Embeddings model initialized in {time.time() - start:.2f} seconds")
+    return model
 
 
 def get_vectorstore():

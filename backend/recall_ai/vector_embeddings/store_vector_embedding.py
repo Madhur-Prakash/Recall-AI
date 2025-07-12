@@ -60,6 +60,9 @@ def store_embeddings(img_dir: str = "images_taken/"):
         vectorstore.save_local(vector_store_path)
         logger.info(f"✅ Embeddings stored successfully")
 
+        # Clear cache so next get_vectorstore() reloads fresh vector store
+        vectorstore = None
+        
         shutil.rmtree(img_dir)
         os.makedirs(img_dir, exist_ok=True)
 

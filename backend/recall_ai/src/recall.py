@@ -3,21 +3,12 @@ from fastapi.responses import StreamingResponse
 from fastapi import status, HTTPException, APIRouter
 from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model, get_llm
 from recall_ai.helpers.utils import setup_logging
-from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()
 recall = APIRouter()
-
-# Load environment variables
-
-# Global variables to be initialized during lifespan
-llm = None
-embeddings_model = None
-vectorstore = None
 
 logger = setup_logging()
 
@@ -42,8 +33,11 @@ If the user is involved in or requests anything related to the above, respond cl
 Never infer or fabricate details that are not explicitly stated or reasonably inferred from the provided context. If the answer is not contained within the context, respond with: "The context doesn't contain that information."
 
 Do not repeat the question unless explicitly asked to paraphrase. Do not use unnecessary filler or be overly verbose unless a detailed explanation is requested. Use a clear, concise, and conversational tone. When summarizing or listing items, use bullet points or numbered lists. For direct answers, use single, well-structured sentences.
-
 If no context is provided, respond with: "I don't have any context to answer that question." 
+
+If the user ask for a summary of the context, provide a concise summary without repeating the entire context verbatim.
+If user ask "what he was doing on this day" or "what was he doing on this date", provide a concise summary of the context by searching for any date or time mentioned in the context.
+
 Always maintain a polite, friendly, and human-like tone. Strictly adhere to all the rules stated above in every response.
 <context>
 {context}
