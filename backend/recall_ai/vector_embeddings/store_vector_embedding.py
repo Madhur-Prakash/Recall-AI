@@ -2,10 +2,10 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import glob
-from datetime import datetime
+from datetime import timedelta
 import shutil
 from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model
-from recall_ai.helpers.utils import setup_logging
+from recall_ai.helpers.utils import setup_logging, get_file_creation_age
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -43,13 +43,28 @@ def store_embeddings(img_dir: str = "images_taken/"):
 
         vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
 
+
         if os.path.exists(os.path.join(vector_store_path, "index.faiss")):
             try:
-                logger.info("Loading existing vector store...")
-                vectorstore = FAISS.load_local(vector_store_path, embeddings_model, allow_dangerous_deserialization=True)
-                new_vectorstore = FAISS.from_texts(chunked_texts, embeddings_model)
-                vectorstore.merge_from(new_vectorstore)
-                logger.info(f"✅ Appended {len(chunked_texts)} new embeddings")
+                #  check when file was created
+                age_of_vector_store = get_file_creation_age(vector_store_path)
+                logger.info(f"✌️ Vector store age: {age_of_vector_store} days")
+                if (age_of_vector_store >= timedelta(days=30)): # delete vector store if older than 30 days
+                    logger.info(f"✅ file was created {age_of_vector_store} days ago, removing old vector store")
+                    shutil.rmtree(vector_store_path) # remove old vector store
+                    logger.info("✅ Removed old vector store")
+                    os.makedirs(vector_store_path, exist_ok=True) # create new vector store
+                    logger.info("✅ Created new vector store directory")
+                    vectorstore = FAISS.from_texts(chunked_texts, embeddings_model)
+
+                else: 
+                    logger.info("Vector store is less than 30 days old, appending new embeddings")
+                    # Load existing vector store and append new embeddings
+                    logger.info(f"✅ Existing vector store found at {vector_store_path}")
+                    vectorstore = FAISS.load_local(vector_store_path, embeddings_model, allow_dangerous_deserialization=True)
+                    new_vectorstore = FAISS.from_texts(chunked_texts, embeddings_model)
+                    vectorstore.merge_from(new_vectorstore)
+                    logger.info(f"✅ Appended {len(chunked_texts)} new embeddings")
             except Exception as e:
                 logger.warning(f"Fallback to new vectorstore: {e}")
                 vectorstore = FAISS.from_texts(chunked_texts, embeddings_model)
@@ -62,9 +77,11 @@ def store_embeddings(img_dir: str = "images_taken/"):
 
         # Clear cache so next get_vectorstore() reloads fresh vector store
         vectorstore = None
-        
+
         shutil.rmtree(img_dir)
+        logger.info(f"✅ Cleared image directory {img_dir}")
         os.makedirs(img_dir, exist_ok=True)
+        logger.info(f"✅ Created new image directory {img_dir}")
 
         return {"message": "Embeddings stored successfully.", "total_chunks": len(chunked_texts)}
     except Exception as e:

@@ -1,6 +1,7 @@
+from datetime import timedelta
 import logging
-import requests
 import os
+import time
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 def setup_logging():
@@ -30,3 +31,13 @@ def setup_logging():
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
     return logger
+
+
+def get_file_creation_age(file_path):
+    if not os.path.exists(file_path):
+        return None
+    creation_time = os.path.getctime(file_path)  # Get creation time in seconds since epoch
+    current_time = time.time() # Get current time in seconds since epoch
+    age_seconds = current_time - creation_time # Calculate age in seconds
+    return timedelta(seconds=age_seconds)
+
