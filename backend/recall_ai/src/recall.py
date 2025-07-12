@@ -4,6 +4,7 @@ from fastapi import status, HTTPException, APIRouter
 from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model, get_llm
 from recall_ai.helpers.utils import setup_logging
 from langchain_community.vectorstores import FAISS
+import recall_ai.helpers.dependencies as deps
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 
@@ -60,9 +61,8 @@ async def chat_with_logs(query: str):
         
         except Exception as e:
             logger.error(f"Failed to load vector store: {e}")
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector store not found. Please run /store to initialize it.")
-
-
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector store not found.")
+        
     try:
         # Step 1: Embed and retrieve top-k chunks
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
@@ -85,6 +85,9 @@ async def chat_with_logs(query: str):
             except Exception as e:
                 logger.error(f"Error during LLM streaming: {e}")
                 yield "❌ Error occurred during LLM response generation."
+        
+        # Clear cache so next get_vectorstore() reloads fresh vector store
+        deps.vectorstore = None
 
         return StreamingResponse(stream(), media_type="text/plain")
 

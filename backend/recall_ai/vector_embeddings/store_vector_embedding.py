@@ -4,32 +4,31 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 import glob
 from datetime import timedelta
 import shutil
-from recall_ai.helpers.dependencies import get_vectorstore, get_embeddings_model
+from recall_ai.helpers.dependencies import get_embeddings_model
+import recall_ai.helpers.dependencies as deps
 from recall_ai.helpers.utils import setup_logging, get_file_creation_age
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 logger = setup_logging()
 
-vectorstore = get_vectorstore()
-embeddings_model = get_embeddings_model()
 
-def store_embeddings(img_dir: str = "images_taken/"):
+def store_embeddings(text_dir: str = "images_taken/"):
     try:
-        img_files = glob.glob(os.path.join(img_dir, "*.txt"))
-        logger.info(f"✅ Found {len(img_files)} img -> text files")
-        if (len(img_files) == 0):
-            logger.error("❌ No image files found to process.")
-            return {"error": "No image files found to process."}
+        text_files = glob.glob(os.path.join(text_dir, "*.txt"))
+        logger.info(f"✅ Found {len(text_files)} img -> text files")
+        if (len(text_files) == 0):
+            logger.error("❌ No text files found to process.")
+            return {"error": "No text files found to process."}
 
         raw_lines = []
-        for img_file in img_files:
+        for text_file in text_files:
             try:
-                with open(img_file, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(text_file, 'r', encoding='utf-8', errors='ignore') as f:
                     lines = [line.strip() for line in f if len(line.strip()) > 10]
                 raw_lines.extend(lines)
             except Exception as e:
-                logger.error(f"Failed to read {img_file}: {e}")
+                logger.error(f"Failed to read {text_file}: {e}")
 
         if not raw_lines:
             logger.error("No valid log lines found.")
@@ -42,8 +41,8 @@ def store_embeddings(img_dir: str = "images_taken/"):
         logger.info(f"Chunked into {len(chunked_texts)} documents")
 
         vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
-
-
+        embeddings_model = get_embeddings_model()
+        
         if os.path.exists(os.path.join(vector_store_path, "index.faiss")):
             try:
                 #  check when file was created
@@ -76,12 +75,12 @@ def store_embeddings(img_dir: str = "images_taken/"):
         logger.info(f"✅ Embeddings stored successfully")
 
         # Clear cache so next get_vectorstore() reloads fresh vector store
-        vectorstore = None
+        deps.vectorstore = None
 
-        shutil.rmtree(img_dir)
-        logger.info(f"✅ Cleared image directory {img_dir}")
-        os.makedirs(img_dir, exist_ok=True)
-        logger.info(f"✅ Created new image directory {img_dir}")
+        shutil.rmtree(text_dir)
+        logger.info(f"✅ Cleared image directory {text_dir}")
+        os.makedirs(text_dir, exist_ok=True)
+        logger.info(f"✅ Created new image directory {text_dir}")
 
         return {"message": "Embeddings stored successfully.", "total_chunks": len(chunked_texts)}
     except Exception as e:

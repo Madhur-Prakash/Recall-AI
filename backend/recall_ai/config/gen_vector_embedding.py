@@ -80,7 +80,7 @@ def safe_commit(consumer, max_retries=3):
     return False
 
 def run_kafka():
-    BATCH_SIZE = 43
+    BATCH_SIZE = 34
     IMAGE_TEXT_BATCH = []  # Temporary storage for batch
     consumer = None
     
