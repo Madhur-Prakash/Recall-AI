@@ -35,7 +35,7 @@ model.eval()
 
 # Audio recording parameters
 SAMPLE_RATE = 16000
-DURATION = 5  # seconds
+DURATION = 10  # seconds
 CHANNELS = 1
 
 def record_audio(duration=5):
@@ -103,7 +103,7 @@ def speak_text(command):
 def process_with_server(text):
     """Send text to your local server"""
     try:
-        res = requests.get(f"http://localhost:8000/chat?query={text}")
+        res = requests.get(f"http://localhost:8020/chat?query={text}")
         if res.status_code == 200:
             return res.text
         else:
