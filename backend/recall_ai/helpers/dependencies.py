@@ -1,3 +1,5 @@
+from qdrant_client import QdrantClient
+from langchain_community.vectorstores import Qdrant
 import os
 import time
 from functools import cache
@@ -45,5 +47,46 @@ def get_vectorstore():
             logger.info(f"Vector store loaded in {time.time() - start:.2f} seconds")
         except Exception as e:
             logger.error(f"Failed to load vector store: {e}")
+            vectorstore = None
+    return vectorstore
+
+
+
+def get_quad_vectorstore():
+    global vectorstore
+    if vectorstore is None:
+        logger.info("Connecting to Qdrant...")
+        try:
+            embeddings = get_embeddings_model()
+            client = QdrantClient("localhost", port=6333)
+            collection_name = "img_embeddings"
+            
+            # Check if collection exists, if not create it
+            try:
+                client.get_collection(collection_name)
+                logger.info(f"✅ Collection '{collection_name}' exists.")
+            except Exception:
+                # Collection doesn't exist, create it
+                logger.info(f"Collection '{collection_name}' doesn't exist. Creating...")
+                from qdrant_client.models import Distance, VectorParams
+                
+                # Get vector dimension from embeddings model
+                test_vector = embeddings.embed_query("test")
+                vector_dim = len(test_vector)
+                
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE)
+                )
+                logger.info(f"✅ Created collection '{collection_name}'")
+            
+            vectorstore = Qdrant(
+                client=client,
+                collection_name=collection_name,
+                embeddings=embeddings,
+            )
+            logger.info("✅ Qdrant vector store initialized.")
+        except Exception as e:
+            logger.error(f"❌ Failed to connect to Qdrant: {e}")
             vectorstore = None
     return vectorstore

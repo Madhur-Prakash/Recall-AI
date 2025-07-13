@@ -41,12 +41,13 @@ def store_embeddings(text_dir: str = "images_taken/"):
         logger.info(f"Chunked into {len(chunked_texts)} documents")
 
         vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
+        index_path = os.path.join(vector_store_path, "index.faiss")
         embeddings_model = get_embeddings_model()
         
-        if os.path.exists(os.path.join(vector_store_path, "index.faiss")):
+        if os.path.exists(index_path):
             try:
                 #  check when file was created
-                age_of_vector_store = get_file_creation_age(vector_store_path)
+                age_of_vector_store = get_file_creation_age(index_path)
                 logger.info(f"✌️ Vector store age: {age_of_vector_store} days")
                 if (age_of_vector_store >= timedelta(days=30)): # delete vector store if older than 30 days
                     logger.info(f"✅ file was created {age_of_vector_store} days ago, removing old vector store")

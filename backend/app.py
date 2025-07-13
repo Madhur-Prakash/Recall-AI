@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from recall_ai.src.quad_recall import quad_recall
 from recall_ai.src.recall import recall
 from recall_ai.helpers.utils import setup_logging
 
@@ -28,3 +29,4 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET_KEY"))
 
 app.include_router(recall, tags=["recall"])
+app.include_router(quad_recall, tags=["quad_recall"])

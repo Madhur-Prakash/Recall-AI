@@ -11,7 +11,7 @@ import time
 import time
 print("Before importing store_embeddings")
 st = time.time()
-from recall_ai.vector_embeddings.store_vector_embedding import store_embeddings
+from recall_ai.vector_embeddings.quad_vecor_embedding import quad_store_embeddings
 print("After importing store_embeddings")
 fn = time.time() - st
 print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
@@ -41,7 +41,7 @@ def insert_batch(batch):
     """Insert batch with retry logic"""
     for attempt in range(3):  # Retry 3 times
         try:
-            res = store_embeddings()
+            res = quad_store_embeddings()
             logger.info(f"Inserted batch of {len(batch)} OCRs.")
             if res is None:
                 logger.error("⚠️No embeddings generated.")

@@ -24,3 +24,5 @@ itsdangerous
 speechrecognition
 pyaudio
 pyttsx3
+qdrant-client  
+langchain-community
