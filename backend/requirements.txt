@@ -25,4 +25,7 @@ speechrecognition
 pyaudio
 pyttsx3
 qdrant-client  
-langchain-community
+sounddevice
+pyttsx3 
+# choco install ffmpeg
+# sudo apt install ffmpeg

@@ -48,7 +48,7 @@ Question: {input}
 
 
 @recall.get("/chat", status_code=status.HTTP_200_OK)
-async def chat_with_logs(query: str):
+async def chat_with_history(query: str):
     llm = get_llm()
     embeddings_model = get_embeddings_model()
     vectorstore = get_vectorstore()
