@@ -6,6 +6,8 @@ import pyttsx3
 import time
 import requests
 import threading
+from recall_ai.helpers.utils import setup_logging
+from recall_ai.src.recall import get_chat_response
 
 # Initialize the TTS engine (removed global engine to avoid threading issues)
 # Each thread will create its own engine instance
@@ -32,6 +34,7 @@ model = WhisperForConditionalGeneration.from_pretrained(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 model.eval()
+logger = setup_logging()
 
 # Audio recording parameters
 SAMPLE_RATE = 16000
@@ -41,6 +44,7 @@ CHANNELS = 1
 def record_audio(duration=5):
     """Record audio from microphone"""
     print(f"Recording for {duration} seconds...")
+    logger.info(f"Recording audio for {duration} seconds...")
     audio_data = sd.rec(int(duration * SAMPLE_RATE), 
                        samplerate=SAMPLE_RATE, 
                        channels=CHANNELS, 
@@ -51,6 +55,7 @@ def record_audio(duration=5):
 def transcribe_audio_direct(audio_data):
     """Transcribe audio using direct model inference"""
     try:
+        logger.info("Transcribing audio directly with Whisper model...")
         # Process audio
         input_features = processor(
             audio_data, 
@@ -72,6 +77,7 @@ def transcribe_audio_direct(audio_data):
         
         # Decode the transcription
         transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
+        logger.info(f"Transcription result: {transcription}")
         
         return transcription.strip().lower()
         
@@ -83,6 +89,7 @@ def speak_text(command):
     """Convert text to speech with threading"""
     def _speak():
         try:
+            logger.info(f"Speaking command: {command}")
             # Create a new engine instance for thread safety
             local_engine = pyttsx3.init()
             local_engine.setProperty('rate', 150)
@@ -100,66 +107,67 @@ def speak_text(command):
     thread.start()
     thread.join(timeout=10)
 
-def process_with_server(text):
-    """Send text to your local server"""
+async def process_with_server(text):
+    """
+    Alternative: Call the chat function directly if it's in the same application
+    """
     try:
-        res = requests.get(f"http://localhost:8020/chat?query={text}")
-        if res.status_code == 200:
-            return res.text
-        else:
-            print("Error communicating with the server.")
-            return None
+        logger.info(f"Processing text with server: {text}")
+        response = await get_chat_response(text)
+        logger.info(f"Server response: {response}")
+        return response
     except Exception as e:
-        print(f"Server error: {e}")
-        return None
+        logger.error(f"Local function error: {e}")
+        return "Sorry, I couldn't process your request."
 
-def main():
-    print("Voice Assistant with Direct Whisper Model")
-    print("Say something... (say 'exit' to quit)")
+
+# def main():
+#     print("Voice Assistant with Direct Whisper Model")
+#     print("Say something... (say 'exit' to quit)")
     
-    while True:
-        try:
-            # Record audio
-            audio_data = record_audio(DURATION)
+#     while True:
+#         try:
+#             # Record audio
+#             audio_data = record_audio(DURATION)
             
-            # Check if audio has sufficient volume
-            if np.max(np.abs(audio_data)) < 0.01:
-                print("No speech detected, continuing...")
-                continue
+#             # Check if audio has sufficient volume
+#             if np.max(np.abs(audio_data)) < 0.01:
+#                 print("No speech detected, continuing...")
+#                 continue
             
-            print("Transcribing...")
-            text = transcribe_audio_direct(audio_data)
+#             print("Transcribing...")
+#             text = transcribe_audio_direct(audio_data)
             
-            if text:
-                print(f"You said: {text}")
+#             if text:
+#                 print(f"You said: {text}")
                 
-                # Process with your server
-                server_response = process_with_server(text)
+#                 # Process with your server
+#                 server_response = process_with_server(text)
                 
-                if server_response:
-                    print(f"Server response: {server_response}")
-                    speak_text(server_response)
-                else:
-                    speak_text("Sorry, I couldn't process your request.")
+#                 if server_response:
+#                     print(f"Server response: {server_response}")
+#                     speak_text(server_response)
+#                 else:
+#                     speak_text("Sorry, I couldn't process your request.")
                 
-                # Exit condition
-                if any(word in text for word in ["exit", "quit", "stop"]):
-                    print("Exiting the program.")
-                    speak_text("Goodbye!")
-                    break
-            else:
-                print("Could not transcribe audio")
-                speak_text("Sorry, I didn't catch that.")
+#                 # Exit condition
+#                 if any(word in text for word in ["exit", "quit", "stop"]):
+#                     print("Exiting the program.")
+#                     speak_text("Goodbye!")
+#                     break
+#             else:
+#                 print("Could not transcribe audio")
+#                 speak_text("Sorry, I didn't catch that.")
                 
-            time.sleep(0.5)
+#             time.sleep(0.5)
             
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            speak_text("Goodbye!")
-            break
-        except Exception as e:
-            print(f"Error: {e}")
-            speak_text("Sorry, something went wrong.")
+#         except KeyboardInterrupt:
+#             print("\nExiting...")
+#             speak_text("Goodbye!")
+#             break
+#         except Exception as e:
+#             print(f"Error: {e}")
+#             speak_text("Sorry, something went wrong.")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

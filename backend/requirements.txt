@@ -27,5 +27,6 @@ pyttsx3
 qdrant-client  
 sounddevice
 pyttsx3 
+librosa
 # choco install ffmpeg
 # sudo apt install ffmpeg

@@ -7,6 +7,7 @@ from langchain_community.vectorstores import FAISS
 import recall_ai.helpers.dependencies as deps
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
+import asyncio
 
 load_dotenv()
 recall = APIRouter()
@@ -47,8 +48,59 @@ Question: {input}
 """)
 
 
+async def get_chat_response(query: str) -> str:
+    """
+    Core chat function that returns a string response.
+    This can be used by both streaming and non-streaming endpoints.
+    """
+    logger.info(f"Processing chat query: {query}")
+    llm = get_llm()
+    embeddings_model = get_embeddings_model()
+    vectorstore = get_vectorstore()
+
+    if vectorstore is None:
+        try:
+            load_path = os.path.join(os.getcwd(), "img_vector_store")
+            vectorstore = FAISS.load_local(load_path, embeddings_model, allow_dangerous_deserialization=True)
+            logger.info("Vector store loaded successfully.")
+        
+        except Exception as e:
+            logger.error(f"Failed to load vector store: {e}")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector store not found.")
+        
+    try:
+        # Step 1: Embed and retrieve top-k chunks
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        query_emb = f"query: {query}"
+        docs = retriever.invoke(query_emb)
+
+        if not docs:
+            logger.warning("No relevant documents found for query.")
+            return "No relevant information found in the context."
+
+        # Step 2: Format the context
+        context = "\n".join([doc.page_content for doc in docs])
+        full_prompt = prompt.format_messages(context=context, input=query)
+
+        # Step 3: Get complete response
+        response = llm.invoke(full_prompt)
+        
+        # Clear cache so next get_vectorstore() reloads fresh vector store
+        deps.vectorstore = None
+
+        return response.content
+
+    except Exception as e:
+        logger.error(f"❌ Chat error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
 @recall.get("/chat", status_code=status.HTTP_200_OK)
 async def chat_with_history(query: str):
+    """
+    Streaming endpoint for chat
+    """
+    logger.info(f"Received streaming chat query: {query}")
     llm = get_llm()
     embeddings_model = get_embeddings_model()
     vectorstore = get_vectorstore()
@@ -78,10 +130,19 @@ async def chat_with_history(query: str):
         full_prompt = prompt.format_messages(context=context, input=query)
 
         # Step 3: Stream LLM output
-        def stream():
+        async def stream_generator():
             try:
-                for chunk in llm.stream(full_prompt):
-                    yield chunk.content
+                # Check if llm.stream is async or sync
+                if hasattr(llm, 'astream'):
+                    # Use async streaming if available
+                    async for chunk in llm.astream(full_prompt):
+                        yield chunk.content
+                else:
+                    # Use sync streaming in async context
+                    for chunk in llm.stream(full_prompt):
+                        yield chunk.content
+                        # Add small delay to prevent blocking
+                        await asyncio.sleep(0.001)
             except Exception as e:
                 logger.error(f"Error during LLM streaming: {e}")
                 yield "❌ Error occurred during LLM response generation."
@@ -89,7 +150,7 @@ async def chat_with_history(query: str):
         # Clear cache so next get_vectorstore() reloads fresh vector store
         deps.vectorstore = None
 
-        return StreamingResponse(stream(), media_type="text/plain")
+        return StreamingResponse(stream_generator(), media_type="text/plain")
 
     except Exception as e:
         logger.error(f"❌ Streaming chat error: {e}")

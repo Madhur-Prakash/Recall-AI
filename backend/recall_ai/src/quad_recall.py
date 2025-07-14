@@ -1,3 +1,4 @@
+import asyncio
 from fastapi.responses import StreamingResponse
 from fastapi import status, HTTPException, APIRouter
 from qdrant_client import QdrantClient
@@ -75,15 +76,24 @@ async def chat_with_quad_history(query: str):
         context = "\n".join([doc.page_content for doc in docs])
         full_prompt = prompt.format_messages(context=context, input=query)
 
-        def stream():
+        async def stream_generator():
             try:
-                for chunk in llm.stream(full_prompt):
-                    yield chunk.content
+                # Check if llm.stream is async or sync
+                if hasattr(llm, 'astream'):
+                    # Use async streaming if available
+                    async for chunk in llm.astream(full_prompt):
+                        yield chunk.content
+                else:
+                    # Use sync streaming in async context
+                    for chunk in llm.stream(full_prompt):
+                        yield chunk.content
+                        # Add small delay to prevent blocking
+                        await asyncio.sleep(0.001)
             except Exception as e:
                 logger.error(f"Error during LLM streaming: {e}")
                 yield "❌ Error occurred during LLM response generation."
 
-        return StreamingResponse(stream(), media_type="text/plain")
+        return StreamingResponse(stream_generator(), media_type="text/plain")
 
     except Exception as e:
         logger.error(f"❌ Streaming chat error: {e}")
