@@ -5,7 +5,7 @@ from qdrant_client import QdrantClient
 from recall_ai.helpers.dependencies import get_quad_vectorstore, get_embeddings_model, get_llm
 from recall_ai.helpers.utils import setup_logging
 from langchain_core.prompts import ChatPromptTemplate
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 
 load_dotenv()
 quad_recall = APIRouter()
