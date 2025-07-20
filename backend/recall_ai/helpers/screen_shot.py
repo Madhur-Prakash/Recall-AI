@@ -27,7 +27,7 @@ def ocr_image(image_path):
         logging.info("OCR text extracted")  # Log first 100 characters for brevity
         return full_text
 
-        
+    
     except Exception as e:
         formatted_error = traceback.format_exc()
         logging.error(f"Error in OCR: {formatted_error}")
