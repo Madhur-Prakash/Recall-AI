@@ -1,7 +1,5 @@
 fastapi[standard]
-motor
 kafka-python
-aioredis
 concurrent_log_handler
 Pillow
 opencv-python
@@ -25,8 +23,8 @@ speechrecognition
 pyaudio
 pyttsx3
 qdrant-client  
-sounddevice
-pyttsx3 
+sounddevice 
 librosa
-# choco install ffmpeg
-# sudo apt install ffmpeg
+-f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
+paddlepaddle-gpu==2.6.2
+paddleocr
