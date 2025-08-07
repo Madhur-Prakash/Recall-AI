@@ -171,7 +171,7 @@ try:
                         if (os.path.exists(file_path)):
                             os.remove(file_path) # delete the image after OCR
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
-                        logging.info(f"Sending OCR text result to Kafka topic 'embeddings'")
+                        logging.info(f"Sending OCR text result to Kafka topic 'vector_embeddings'")
                         producer.send('vector_embeddings', {'image_path': file_path, 'text': res})
                         producer.flush()
                         print(f"✅ OCR text extracted and sent to Kafka for monitor {i + 1} - {monitor_dict[i]['name']}")

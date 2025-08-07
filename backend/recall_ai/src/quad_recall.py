@@ -59,7 +59,9 @@ async def chat_with_quad_history(query: str):
         # Check if collection has any data
         client = QdrantClient("localhost", port=6333)
         collection_info = client.get_collection("img_embeddings")
-        
+
+        logger.info(f"Collection info: {collection_info}")
+
         if collection_info.points_count == 0:
             logger.warning("Collection is empty - no embeddings available.")
             return {"response": "No data available yet. Please upload and process some images first to generate embeddings."}
