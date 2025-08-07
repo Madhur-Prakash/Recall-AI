@@ -63,7 +63,7 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
         logger.info("✅ Embeddings stored successfully in Qdrant")
 
         # Clear old embeddings (older than 25 days)
-        cutoff_ts = time.time() - (25 * 24 * 60 * 60)  # 25 days ago in seconds
+        cutoff_ts = time.time() - (30 * 24 * 60 * 60)  # 30 days ago in seconds
 
         timestamp_filter = Filter(
             must=[
