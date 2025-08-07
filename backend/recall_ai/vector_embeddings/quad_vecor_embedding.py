@@ -42,14 +42,17 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
         client = QdrantClient("localhost", port=6333)
         collection_name = "img_embeddings"
 
-        # Auto-create collection if not exists
+        # Auto-create collection if it doesn't exist
         vector = embeddings_model.embed_query("test")
         vector_dim = len(vector)
 
-        client.recreate_collection(
-            collection_name=collection_name,
-            vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE)
-        )
+        existing_collections = [c.name for c in client.get_collections().collections]
+        if collection_name not in existing_collections:
+            logger.info(f"ℹ️ Creating collection '{collection_name}' with vector size {vector_dim}")
+            client.create_collection(
+                collection_name=collection_name,
+                vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE)
+            )
 
         # Use float timestamp for metadata
         now_ts = time.time()
@@ -60,11 +63,12 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
             collection_name=collection_name
         )
 
-        logger.info("✅ Embeddings stored successfully in Qdrant")
+        # Confirm insertion
+        count = client.count(collection_name=collection_name).count
+        logger.info(f"📦 Collection '{collection_name}' now contains {count} points")
 
-        # Clear old embeddings (older than 25 days)
-        cutoff_ts = time.time() - (30 * 24 * 60 * 60)  # 30 days ago in seconds
-
+        # Clear old embeddings (older than 30 days)
+        cutoff_ts = time.time() - (30 * 24 * 60 * 60)
         timestamp_filter = Filter(
             must=[
                 FieldCondition(
@@ -74,13 +78,11 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
             ]
         )
 
-        # Fixed deletion call with proper FilterSelector
-        client.delete(
+        deleted_count = client.delete(
             collection_name=collection_name,
             points_selector=FilterSelector(filter=timestamp_filter)
         )
-
-        logger.info(f"🧹 Deleted old embeddings older than {cutoff_ts}")
+        logger.info(f"🧹 Deleted old embeddings older than {cutoff_ts}: {deleted_count}")
 
         # Reset image directory
         shutil.rmtree(text_dir)
