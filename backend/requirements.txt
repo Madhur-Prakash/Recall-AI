@@ -24,6 +24,7 @@ pyaudio
 pyttsx3
 watchdog
 qdrant-client  
+cryptography
 sounddevice 
 librosa
 -f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
