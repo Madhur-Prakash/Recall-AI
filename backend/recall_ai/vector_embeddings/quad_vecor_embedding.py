@@ -8,17 +8,28 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, Filter, FieldCondition, Range, FilterSelector
 from recall_ai.helpers.dependencies import get_embeddings_model
 from recall_ai.helpers.utils import setup_logging
+from recall_ai.helpers.decrypt import decrypt_file_data
+import traceback
 
 logger = setup_logging()
 
 def quad_store_embeddings(text_dir: str = "images_taken/"):
     try:
+        enc_files = glob.glob(os.path.join(text_dir, "*.enc"))
+        if not enc_files:
+            logger.error("❌ No encrypted files found to process.")
+            return {"error": "No encrypted files found to process."}
+        success = decrypt_file_data()
+        if not success:
+            logger.error("❌ Decryption failed.")
+            return {"error": "Decryption failed."}
+        logger.info("✅ Decryption successful.")
+
         text_files = glob.glob(os.path.join(text_dir, "*.txt"))
         logger.info(f"✅ Found {len(text_files)} img -> text files")
-
         if not text_files:
+            logger.error("❌ No text files found to process.")
             return {"error": "No text files found to process."}
-
         raw_lines = []
         for text_file in text_files:
             try:
@@ -26,6 +37,8 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
                     lines = [line.strip() for line in f if len(line.strip()) > 10]
                 raw_lines.extend(lines)
             except Exception as e:
+                formatted_traceback = traceback.format_exc()
+                logger.error(f"Traceback (most recent call last):{formatted_traceback}")
                 logger.error(f"Failed to read {text_file}: {e}")
 
         if not raw_lines:

@@ -13,6 +13,7 @@ from mss import mss
 from recall_ai.helpers.screen_shot import ocr_image
 import wmi
 from helpers.utils import setup_logging
+from helpers.encrypt import encrypt_file_data
 
 # Configuration
 THRESHOLD_PIXELS = 100000  # Number of changed pixels to trigger detection
@@ -168,6 +169,12 @@ try:
                         text_file_path = os.path.join(output_dir, f"ocr_{i + 1}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
                         with open(text_file_path, 'w', encoding='utf-8') as f:
                             f.write(res)
+                        success = encrypt_file_data()
+                        if not success:
+                            logging.error(f"❌ Encryption failed for {text_file_path}.")
+                        else:
+                            logging.info(f"🔐 Encryption successful for {text_file_path}.")
+
                         if (os.path.exists(file_path)):
                             os.remove(file_path) # delete the image after OCR
                         logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")

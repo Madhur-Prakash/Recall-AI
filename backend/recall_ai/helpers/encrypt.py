@@ -1,33 +1,53 @@
 import glob
 import os
 from cryptography.fernet import Fernet
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from recall_ai.helpers.utils import setup_logging
 
 logger = setup_logging()
+KEY_FILE = "thekey.key"
+
+
+def load_or_create_key():
+    if os.path.exists(KEY_FILE):
+        with open(KEY_FILE, "rb") as f:
+            key = f.read()
+            logger.info("🔑 Loaded existing encryption key.")
+    else:
+        key = Fernet.generate_key()
+        with open(KEY_FILE, "wb") as f:
+            f.write(key)
+        logger.info("🔑 Generated and saved new encryption key.")
+    return key
+
 
 def encrypt_file_data(text_dir: str = "images_taken/"):
-    text_files = glob.glob(os.path.join(text_dir, "*.txt"))
-    logger.info(f"✅ Found {len(text_files)} img -> text files")
+    key = load_or_create_key()
 
-    if not text_files:
-        return {"error": "No text files found to process."}
-    
-    files = []
-    # os.chdir("ransomware")
-    for file in os.listdir(text_dir):
-        if (file == "encrypt.py" or file == "thekey.key" or file == "decrypt.py"): # Skip these files
-            continue
-        if os.path.isfile(file):
-            files.append(file)
+    # Only encrypt files without .enc extension
+    files_to_encrypt = glob.glob(os.path.join(text_dir, "*.txt"))
+    files_to_encrypt = [f for f in files_to_encrypt if not f.endswith(".enc")]
 
-    key = Fernet.generate_key()
+    logger.info(f"✅ Found {len(files_to_encrypt)} text files to encrypt.")
 
-    with open("thekey.key", "wb") as thekey:
-        thekey.write(key) # Save the key to a file
+    if not files_to_encrypt:
+        return {"message": "No new files to encrypt."}
 
-    for file in files:
-        with open(file, "rb") as thefile:
-            contents = thefile.read() # Read the contents of the file
-        encrypted_contents = Fernet(key).encrypt(contents) # Encrypt the contents
-        with open(file, "wb") as thefile:
-            thefile.write(encrypted_contents) # Write the encrypted contents back to the file
+    for filepath in files_to_encrypt:
+        try:
+            with open(filepath, "rb") as file:
+                contents = file.read()
+            encrypted_content = Fernet(key).encrypt(contents)
+            # Write encrypted data to a new file with .enc suffix
+            enc_filepath = filepath.replace(".txt", ".enc")
+            with open(enc_filepath, "wb") as file:
+                file.write(encrypted_content)
+            # Optionally, delete the original file after encryption
+            os.remove(filepath)
+            logger.info(f"🔒 Encrypted file: {filepath} -> {enc_filepath}")
+        except Exception as e:
+            logger.error(f"Failed to encrypt {filepath}: {e}")
+
+    return {"message": "Encryption completed successfully."}

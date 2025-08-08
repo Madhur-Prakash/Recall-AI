@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import glob
 from datetime import timedelta
+from recall_ai.helpers.decrypt import decrypt_file_data
 import shutil
 from recall_ai.helpers.dependencies import get_embeddings_model
 import recall_ai.helpers.dependencies as deps
@@ -15,12 +16,21 @@ logger = setup_logging()
 
 def store_embeddings(text_dir: str = "images_taken/"):
     try:
+        enc_files = glob.glob(os.path.join(text_dir, "*.enc"))
+        if not enc_files:
+            logger.error("❌ No encrypted files found to process.")
+            return {"error": "No encrypted files found to process."}
+        success = decrypt_file_data()
+        if not success:
+            logger.error("❌ Decryption failed.")
+            return {"error": "Decryption failed."}
+        logger.info("✅ Decryption successful.")
+
         text_files = glob.glob(os.path.join(text_dir, "*.txt"))
         logger.info(f"✅ Found {len(text_files)} img -> text files")
-        if (len(text_files) == 0):
+        if not text_files:
             logger.error("❌ No text files found to process.")
             return {"error": "No text files found to process."}
-
         raw_lines = []
         for text_file in text_files:
             try:
