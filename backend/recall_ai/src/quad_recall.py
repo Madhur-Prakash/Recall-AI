@@ -80,20 +80,33 @@ async def chat_with_quad_history(query: str):
 
         async def stream_generator():
             try:
-                # Check if llm.stream is async or sync
                 if hasattr(llm, 'astream'):
-                    # Use async streaming if available
+                    logger.info("Using async streaming for LLM response.")
                     async for chunk in llm.astream(full_prompt):
                         yield chunk.content
                 else:
-                    # Use sync streaming in async context
-                    for chunk in llm.stream(full_prompt):
-                        yield chunk.content
-                        # Add small delay to prevent blocking
+                    logger.info("Using sync streaming for LLM response.")
+                    loop = asyncio.get_running_loop()
+
+                    def sync_stream():
+                        for chunk in llm.stream(full_prompt):
+                            yield chunk.content
+
+                    # Create iterator from sync_stream
+                    iterator = sync_stream()
+
+                    # Pull chunks in a background thread one-by-one
+                    while True:
+                        chunk = await loop.run_in_executor(None, lambda: next(iterator, None))
+                        if chunk is None:
+                            break
+                        yield chunk
                         await asyncio.sleep(0.001)
+
             except Exception as e:
                 logger.error(f"Error during LLM streaming: {e}")
                 yield "❌ Error occurred during LLM response generation."
+
 
         return StreamingResponse(stream_generator(), media_type="text/plain")
 
