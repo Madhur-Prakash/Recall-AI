@@ -8,7 +8,9 @@ A standout feature of Recall AI is that users can interact with the integrated l
 ## 🚀 **Frontend Development Update & Contribution Invitation**
 
 The frontend of Recall AI is currently under active development and will be released soon. Meanwhile, the backend is fully functional and ready to use.  
+
 If you're interested in contributing to the frontend and helping improve the user experience, feel free to fork the repository, work on the frontend, and submit a pull request. Contributions are welcome and will help bring Recall AI to life faster.
+---
 
 ## Features
 - **Continuous Activity Capture**: Periodically takes screenshots to capture user activity.
@@ -17,6 +19,7 @@ If you're interested in contributing to the frontend and helping improve the use
 - **Flexible Storage Options**: Supports both FAISS for lightweight, local vector search and Qdrant for scalable, high-performance vector database operations.
 - **Retrieval-Augmented Generation (RAG)**: Enables natural language querying of past activity with context-aware responses and strict privacy guardrails.
 - **Real-Time LLM Streaming**: Ensures instant responses with asynchronous or synchronous model streaming.
+---
 
 ## Technology Stack
 - **Backend Framework**: FastAPI
@@ -52,6 +55,7 @@ If you're interested in contributing to the frontend and helping improve the use
    https://github.com/UB-Mannheim/tesseract/wiki # Follow installation instructions
    Ensure pytesseract can access the installed binary.
    ```
+---
 
 ## Usage
 1. Go to Backend directory:
@@ -81,11 +85,13 @@ If you're interested in contributing to the frontend and helping improve the use
    ```
    http://127.0.0.1:8000/docs
    ```
+   ---
 
 ## API Endpoints
 ### Activity Capture Endpoints
 - **POST /quad_chat**: Chat with history using the index stored in Qdrant.
 - **POST /chat**: Chat with history using the index stored in FAISS.
+---
 
 ## Project Structure
 ```plaintext
@@ -127,21 +133,26 @@ RecallAI/
 └── frontend
     └── .gitkeep
 ```
+---
 
 ## Future Enhancements
 - **Improve OCR Accuracy**: Integrate more advanced OCR engines for better text extraction accuracy.
 - **Enhance Query Capabilities**: Develop more sophisticated natural language processing techniques for querying past activity.
 - **Expand Storage Options**: Support additional storage backends for increased flexibility.
+---
 
 ## Contribution Guidelines
 Contributions are welcome! To contribute:
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
 3. Commit your changes and submit a pull request.
+---
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+---
 
 ## Author
 **Madhur-Prakash**  
 [GitHub](https://github.com/Madhur-Prakash) | [Medium](https://medium.com/@madhurprakash2005)
+---
