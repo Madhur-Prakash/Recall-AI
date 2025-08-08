@@ -10,7 +10,7 @@ A standout feature of Recall AI is that users can interact with the integrated l
 The frontend of Recall AI is currently under active development and will be released soon. Meanwhile, the backend is fully functional and ready to use.  
 
 If you're interested in contributing to the frontend and helping improve the user experience, feel free to fork the repository, work on the frontend, and submit a pull request. Contributions are welcome and will help bring Recall AI to life faster.
----
+--- ---
 
 ## Features
 - **Continuous Activity Capture**: Periodically takes screenshots to capture user activity.
