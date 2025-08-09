@@ -26,6 +26,7 @@ If you're interested in contributing to the frontend and helping improve the use
 - **Flexible Storage Options**: Supports both FAISS for lightweight, local vector search and Qdrant for scalable, high-performance vector database operations.
 - **Retrieval-Augmented Generation (RAG)**: Enables natural language querying of past activity with context-aware responses and strict privacy guardrails.
 - **Real-Time LLM Streaming**: Ensures instant responses with asynchronous or synchronous model streaming.
+
 ---
 
 ## Technology Stack
@@ -33,6 +34,8 @@ If you're interested in contributing to the frontend and helping improve the use
 - **Storage Backends**: FAISS, Qdrant
 - **OCR Engine**: Tesseract-OCR
 - **Programming Language**: Python
+
+---
 
 ## Installation
 1. Clone the repository:
