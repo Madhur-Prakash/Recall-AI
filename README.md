@@ -5,12 +5,17 @@
 Recall AI is an innovative intelligent memory system that captures user activity through periodic screenshots, extracts text using OCR, and applies intelligent filters to remove sensitive information. The system then encrypts the cleaned text and converts it into vector embeddings for semantic search and contextual recall.
 A standout feature of Recall AI is that users can interact with the integrated large language model (LLM) to ask questions and get meaningful responses based on the specific tasks they were performing, enabling a context-aware, task-focused conversational experience.
 
-## 🚀 **Frontend Development Update & Contribution Invitation**
+---
 
-The frontend of Recall AI is currently under active development and will be released soon. Meanwhile, the backend is fully functional and ready to use.  
+## 🚀 **Frontend Development Update & Contribution Invitation**  
+
+The frontend of **Recall AI** is currently under active development and will be released soon. Meanwhile, the backend is fully functional and ready to use.   
+
+For the frontend, I am specifically looking to develop a **desktop application** that offers an intuitive, responsive, and feature-rich interface for interacting with Recall AI’s backend services.  
 
 If you're interested in contributing to the frontend and helping improve the user experience, feel free to fork the repository, work on the frontend, and submit a pull request. Contributions are welcome and will help bring Recall AI to life faster.
---- ---
+
+---
 
 ## Features
 - **Continuous Activity Capture**: Periodically takes screenshots to capture user activity.
