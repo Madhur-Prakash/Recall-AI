@@ -70,7 +70,7 @@ async def get_chat_response(query: str) -> str:
         
     try:
         # Step 1: Embed and retrieve top-k chunks
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 16})
         query_emb = f"query: {query}"
         docs = retriever.invoke(query_emb)
 
