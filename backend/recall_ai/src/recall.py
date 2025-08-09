@@ -117,7 +117,7 @@ async def chat_with_history(query: str):
         
     try:
         # Step 1: Embed and retrieve top-k chunks
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
         query_emb = f"query: {query}"
         docs = retriever.invoke(query_emb)
 
