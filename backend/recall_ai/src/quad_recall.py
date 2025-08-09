@@ -67,7 +67,7 @@ async def chat_with_quad_history(query: str):
             return {"response": "No data available yet. Please upload and process some images first to generate embeddings."}
         
         # Retrieve top-k chunks
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 16})
         query_emb = f"query: {query}"
         docs = retriever.invoke(query_emb)
 
