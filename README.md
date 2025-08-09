@@ -1,6 +1,8 @@
 # Recall AI
+
 **An Advanced FastAPI-Based Intelligent Memory System**
 
+---
 ## Overview
 Recall AI is an innovative intelligent memory system that captures user activity through periodic screenshots, extracts text using OCR, and applies intelligent filters to remove sensitive information. The system then encrypts the cleaned text and converts it into vector embeddings for semantic search and contextual recall.
 A standout feature of Recall AI is that users can interact with the integrated large language model (LLM) to ask questions and get meaningful responses based on the specific tasks they were performing, enabling a context-aware, task-focused conversational experience.
