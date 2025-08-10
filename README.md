@@ -67,11 +67,11 @@ If you're interested in contributing to the frontend and helping improve the use
    ```
 
 7. Set up environment variables:
-   - Create a `.env` file in the `backend` directory and configure the necessary environment variables.
-   
-    ```plaintext
-   GROQ_API_KEY = "YOUR_GROQ_API_KEY"
-   ```
+
+``` bash
+# Copy the .env.sample file to .env and fill in the required values.
+# .env file should be in the backend directory.
+```
 
 ## Usage
 1. Go to Backend directory:
