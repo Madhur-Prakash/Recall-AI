@@ -62,10 +62,16 @@ If you're interested in contributing to the frontend and helping improve the use
 6. Install Tesseract OCR:
    ```bash
    Download and install from:
-   https://github.com/UB-Mannheim/tesseract/wiki # Follow installation instructions
+   https://github.com/UB-Mannheim/tesseract/wiki   # Follow installation instructions
    Ensure pytesseract can access the installed binary.
    ```
----
+
+7. Set up environment variables:
+   - Create a `.env` file in the `backend` directory and configure the necessary environment variables.
+   
+    ```plaintext
+   GROQ_API_KEY = "YOUR_GROQ_API_KEY"
+   ```
 
 ## Usage
 1. Go to Backend directory:
