@@ -47,6 +47,7 @@ services:
             - qdrant-db
         env_file:
             - .env
+        command: ["/recall/waitforkafkaQuad.sh", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
     quadrant-kafka:
         build:
