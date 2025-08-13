@@ -39,15 +39,15 @@ services:
             context: .
             dockerfile: Dockerfile.recall
         volumes:
-            - ./data-recall:/recall/storage
+            - .:/recall
         ports:
-            - "8000:8000"
+            - "8005:8005"
         depends_on:
             - kafka
             - qdrant-db
         env_file:
             - .env
-        command: ["/recall/waitforkafkaQuad.sh", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+        # command: ["/recall/waitforkafkaQuad.sh", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8005"]
 
     quadrant-kafka:
         build:

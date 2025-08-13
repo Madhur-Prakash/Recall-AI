@@ -32,3 +32,7 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET_KEY")
 app.include_router(recall, tags=["recall"])
 app.include_router(quad_recall, tags=["quad_recall"])
 app.include_router(voice, tags=["voice"])
+
+@app.get("/")
+def health_check():
+    return {"status": "healthy"}

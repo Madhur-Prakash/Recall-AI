@@ -22,8 +22,8 @@ RUN pip install -r requirements.txt
 # Copy application code
 COPY . .
 
-# RUN chmod +x waitforkafka.sh
+# RUN chmod +x waitforkafkaQuad.sh
 
-EXPOSE 8000
+EXPOSE 8005
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8005"]
