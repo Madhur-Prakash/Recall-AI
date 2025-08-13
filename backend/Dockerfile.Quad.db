@@ -22,6 +22,8 @@ RUN pip install -r requirements.txt
 # Copy application code
 COPY . .
 
+RUN chmod +x waitforkafka.sh
+
 
 # Default CMD just runs the Kafka config (compose will override this with wait script + Python)
-CMD ["python", "/recall/config/quad_gen_vector_embedding.py"]
+CMD ["python", "/recall_ai/config/quad_gen_vector_embedding.py"]

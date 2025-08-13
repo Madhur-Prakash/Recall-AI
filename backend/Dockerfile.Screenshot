@@ -23,7 +23,9 @@ RUN pip install -r requirements.txt
 
 # Copy application code
 COPY . .
-WORKDIR /recall
+
+RUN chmod +x waitforkafka.sh
+
 
 # Run the application
-CMD ["python", "/recall/src/mss_screen.py"]
+CMD ["python", "/recall_ai/src/mss_screen.py"]

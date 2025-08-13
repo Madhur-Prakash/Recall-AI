@@ -37,7 +37,7 @@ services:
     recall:
         build:
             context: .
-            dockerfile: Dockerfile.Screenshot
+            dockerfile: Dockerfile.recall
         volumes:
             - ./data-recall:/recall/storage
         ports:
@@ -54,7 +54,7 @@ services:
             dockerfile: Dockerfile.Quad.db
         depends_on:
             - qdrant-db
-        command: ["/recall/waitforkafka.sh", "python", "/recall/config/quad_gen_vector_embedding.py"]
+        command: ["/recall/waitforkafka.sh", "python", "recall_ai/config/quad_gen_vector_embedding.py"]
 
     screenshot-service:
         build:
@@ -63,4 +63,4 @@ services:
         depends_on:
             - kafka
             - qdrant-db
-        command: ["/recall/waitforkafka.sh", "python", "/recall/src/mss_screen.py"]
+        command: ["/recall/waitforkafka.sh", "python", "recall_ai/src/mss_screen.py"]
