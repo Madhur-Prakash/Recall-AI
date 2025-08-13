@@ -13,6 +13,7 @@ from recall_ai.helpers.utils import setup_logging
 load_dotenv()
 
 logger = setup_logging()
+DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
 
 vectorstore = None
 
@@ -58,7 +59,10 @@ def get_quad_vectorstore():
         logger.info("Connecting to Qdrant...")
         try:
             embeddings = get_embeddings_model()
-            client = QdrantClient("localhost", port=6333)
+            if DEVELOPMENT_ENV == "docker":
+                client = QdrantClient("qdrant", port=6333)
+            else:
+                client = QdrantClient("localhost", port=6333)
             collection_name = "img_embeddings"
             
             # Check if collection exists, if not create it

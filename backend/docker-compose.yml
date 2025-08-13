@@ -1,27 +1,66 @@
-version: '1'
+version: '3.8'
 
 services:
-
-    qdrant:
+    qdrant-db:
         image: qdrant/qdrant
-        container_name: qdrant
         ports:
             - "6333:6333"
             - "6334:6334"
-    
-    zookeeper:
-        image: wurstmeister/zookeeper
+        volumes:
+            - ./data-qdrant:/qdrant/storage
+    kafdrop:
+        image: obsidiandynamics/kafdrop
+        restart: "no"
+        ports:
+            - "9000:9000"
+        environment:
+            KAFKA_BROKERCONNECT: "kafka:29092"
+        depends_on:
+            - "kafka"
+    kafka:
+        image: obsidiandynamics/kafka
+        restart: "no"
         ports:
         - "2181:2181"
-        # networks:
-        #   - app-network
-
-    kafka:
-        image: wurstmeister/kafka
-        ports:
         - "9092:9092"
+        - "29092:29092"
         environment:
-        KAFKA_ADVERTISED_HOST_NAME: localhost
-        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+            KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+            KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+            KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+            KAFKA_RESTART_ATTEMPTS: "10"
+            KAFKA_RESTART_DELAY: "5"
+            ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+
+    recall:
+        build:
+            context: .
+            dockerfile: Dockerfile.Screenshot
+        volumes:
+            - ./data-recall:/recall/storage
+        ports:
+            - "8000:8000"
         depends_on:
-        - zookeeper
+            - kafka
+            - qdrant-db
+        env_file:
+            - .env
+
+    quadrant-kafka:
+        build:
+            context: .
+            dockerfile: Dockerfile.Quad.db
+        depends_on:
+            - qdrant-db
+        command: ["/recall/waitforkafka.sh", "python", "/recall/config/quad_gen_vector_embedding.py"]
+
+    screenshot-service:
+        build:
+            context: .
+            dockerfile: Dockerfile.Screenshot
+        depends_on:
+            - kafka
+            - qdrant-db
+        command: ["/recall/waitforkafka.sh", "python", "/recall/src/mss_screen.py"]

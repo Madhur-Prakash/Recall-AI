@@ -1,0 +1,29 @@
+FROM python:3.10-slim
+
+WORKDIR /recall
+
+COPY requirements.txt .
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    netcat-openbsd \
+    gcc \
+    g++ \
+    portaudio19-dev \
+    libasound2-dev \
+    tesseract-ocr \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/* 
+
+RUN pip install -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# RUN chmod +x waitforkafka.sh
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

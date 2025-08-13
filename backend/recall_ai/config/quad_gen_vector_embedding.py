@@ -7,6 +7,7 @@ from recall_ai.helpers.utils import setup_logging
 import traceback
 import json
 import time
+from dotenv import load_dotenv
 
 import time
 print("Before importing store_embeddings")
@@ -17,12 +18,21 @@ fn = time.time() - st
 print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
 
 logger = setup_logging()
+load_dotenv()  # Load environment variables from .env file
+
+DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
 
 def create_consumer():
     """Create a new Kafka consumer with optimized settings"""
+
+    if DEVELOPMENT_ENV == "docker":
+        bootstrap_servers = ['kafka:29092']
+    else:
+        bootstrap_servers = ['localhost:9092']
+
     return KafkaConsumer(
         'vector_embeddings',
-        bootstrap_servers=['localhost:9092'],
+        bootstrap_servers=bootstrap_servers,
         group_id='embeddings_worker',
         auto_offset_reset='earliest',
         enable_auto_commit=False,  # We'll commit manually after success
