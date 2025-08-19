@@ -3,9 +3,10 @@ import sounddevice as sd
 import numpy as np
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import pyttsx3
-import time
-import requests
 import threading
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # Adjust path to import from parent directory
 from recall_ai.helpers.utils import setup_logging
 from recall_ai.src.recall import get_chat_response
 
@@ -77,7 +78,7 @@ def transcribe_audio_direct(audio_data):
         
         # Decode the transcription
         transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
-        logger.info(f"Transcription result: {transcription}")
+        logger.info(f"🔊Transcription result: {transcription}")
         
         return transcription.strip().lower()
         
