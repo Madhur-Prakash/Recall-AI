@@ -38,6 +38,15 @@ If you're interested in contributing to the frontend and helping improve the use
 ---
 
 ## Installation
+
+> 📌 **Important:**  
+> - For Docker setup, set `DEVELOPMENT_ENV = "docker"` in your `.env` file.  
+> - For local development, either set `DEVELOPMENT_ENV = "local"` or comment out the line entirely.  
+>  
+> This ensures the application loads the correct configuration and prevents environment-related issues.
+
+---
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/Madhur-Prakash/Recall-AI.git

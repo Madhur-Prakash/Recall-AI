@@ -7,12 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from recall_ai.helpers.utils import setup_logging
 
 import time
-print("Before importing store_embeddings")
+print("Before importing quad store_embeddings")
 st = time.time()
 from recall_ai.vector_embeddings.store_vector_embedding import store_embeddings
-print("After importing store_embeddings")
+print("After importing quad store_embeddings")
 fn = time.time() - st
-print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
+print(f"Time taken to import quad store_embeddings: {fn:.2f} seconds")
 
 
 logging = setup_logging()
