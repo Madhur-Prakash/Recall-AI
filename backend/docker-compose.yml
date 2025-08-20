@@ -8,32 +8,6 @@ services:
             - "6334:6334"
         volumes:
             - ./data-qdrant:/qdrant/storage
-    kafdrop:
-        image: obsidiandynamics/kafdrop
-        restart: "no"
-        ports:
-            - "9000:9000"
-        environment:
-            KAFKA_BROKERCONNECT: "kafka:29092"
-        depends_on:
-            - "kafka"
-    kafka:
-        image: obsidiandynamics/kafka
-        restart: "no"
-        ports:
-        - "2181:2181"
-        - "9092:9092"
-        - "29092:29092"
-        environment:
-            KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
-            KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
-            KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
-            KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
-            KAFKA_RESTART_ATTEMPTS: "10"
-            KAFKA_RESTART_DELAY: "5"
-            ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
-
     recall:
         build:
             context: .
@@ -43,25 +17,21 @@ services:
         ports:
             - "8005:8005"
         depends_on:
-            - kafka
             - qdrant-db
         env_file:
             - .env
-        # command: ["/recall/waitforkafkaQuad.sh", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8005"]
-
-    quadrant-kafka:
+    quadrant-store:
         build:
             context: .
             dockerfile: Dockerfile.Quad.db
         depends_on:
             - qdrant-db
-        command: ["/recall/waitforkafka.sh", "python", "recall_ai/config/quad_gen_vector_embedding.py"]
+        command: ["python", "recall_ai/config/quad_gen_vector_embedding.py"]
 
     screenshot-service:
         build:
             context: .
             dockerfile: Dockerfile.Screenshot
         depends_on:
-            - kafka
             - qdrant-db
-        command: ["/recall/waitforkafka.sh", "python", "recall_ai/src/mss_screen.py"]
+        command: ["python", "recall_ai/src/mss_screen.py"]

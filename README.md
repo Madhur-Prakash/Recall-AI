@@ -82,7 +82,7 @@ If you're interested in contributing to the frontend and helping improve the use
    ```bash
    python recall_ai/src/mss_screen.py
    ```
-3. Start the Kafka worker:
+3. Start the WatchDog worker:
    - For Qdrant (Vector DB):
    ```bash
    python recall_ai/config/quad_gen_vector_embedding.py

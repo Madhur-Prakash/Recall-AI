@@ -39,5 +39,10 @@ def get_file_creation_age(file_path):
     creation_time = os.path.getctime(file_path)  # Get creation time in seconds since epoch
     current_time = time.time() # Get current time in seconds since epoch
     age_seconds = current_time - creation_time # Calculate age in seconds
-    return timedelta(seconds=age_seconds)
+    days, remainder = divmod(int(age_seconds), 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, _ = divmod(remainder, 60)
+    age_str = f"{days} days, {hours} hours, {minutes} minutes"
+    age_timedelta = timedelta(seconds=age_seconds)
+    return age_timedelta, age_str
 

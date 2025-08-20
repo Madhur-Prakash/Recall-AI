@@ -57,10 +57,10 @@ def store_embeddings(text_dir: str = "images_taken/"):
         if os.path.exists(index_path):
             try:
                 #  check when file was created
-                age_of_vector_store = get_file_creation_age(index_path)
-                logger.info(f"✌️ Vector store age: {age_of_vector_store} days")
-                if (age_of_vector_store >= timedelta(days=30)): # delete vector store if older than 30 days
-                    logger.info(f"✅ file was created {age_of_vector_store} days ago, removing old vector store")
+                age_of_vector_store, age_str = get_file_creation_age(index_path)
+                logger.info(f"✌️ Vector store age: {age_str}")
+                if age_of_vector_store is not None and age_of_vector_store >= timedelta(days=30):  # delete vector store if older than 30 days
+                    logger.info(f"✅ Vector store was created {age_str} ago, removing old vector store")
                     shutil.rmtree(vector_store_path) # remove old vector store
                     logger.info("✅ Removed old vector store")
                     os.makedirs(vector_store_path, exist_ok=True) # create new vector store

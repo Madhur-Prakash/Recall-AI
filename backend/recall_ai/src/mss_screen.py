@@ -3,7 +3,6 @@ import sys
 import os
 import platform
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from kafka import KafkaProducer
 from screeninfo import get_monitors
 import cv2
 import numpy as np
@@ -29,18 +28,6 @@ logging = setup_logging()
 output_dir = 'images_taken'
 os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
 
-DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
-
-if DEVELOPMENT_ENV == "docker":
-    producer = KafkaProducer(
-        bootstrap_servers=['kafka:29092'],
-        value_serializer=lambda v: json.dumps(v).encode('utf-8')
-    )
-else:
-    producer = KafkaProducer(
-        bootstrap_servers=['localhost:9092'],
-        value_serializer=lambda v: json.dumps(v).encode('utf-8')
-    )
 
 def get_monitor_info_windows():
     """Get detailed monitor information on Windows using WMI"""
@@ -236,13 +223,9 @@ try:
 
                         if (os.path.exists(file_path)):
                             os.remove(file_path) # delete the image after OCR
-                        logging.info(f"OCR result from image of {monitor_dict[i]['name']} are extracted successfully.")
-                        logging.info(f"Sending OCR text result to Kafka topic 'vector_embeddings'")
-                        producer.send('vector_embeddings', {'image_path': file_path, 'text': res})
-                        producer.flush()
-                        print(f"✅ OCR text extracted and sent to Kafka for monitor {i + 1} - {monitor_dict[i]['name']}")
+                        logging.info(f"✅ OCR text result for image of {monitor_dict[i]['name']} is extracted successfully.")
                     else:
-                        logging.error(f"OCR failed to extract text from image of {monitor_dict[i]['name']}.")
+                        logging.error(f"❌ OCR failed to extract text for image of {monitor_dict[i]['name']}.")
                         print("OCR failed to extract text.")
 
             previous_frames[i] = gray_current.copy()
