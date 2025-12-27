@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import '../models/message.dart';
 import '../services/api_service.dart';
 import '../services/speech_service.dart';
@@ -114,8 +116,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       if (!hasPermission) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Speech recognition not available'),
+            content: Text('Speech recognition not available. Please check microphone permissions in Windows Settings.'),
             backgroundColor: Color(0xFFEF4444),
+            duration: Duration(seconds: 4),
           ),
         );
         return;
@@ -127,6 +130,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       
       await SpeechService.startListening(
         onResult: (text) {
+          print('Voice input received: $text');
           if (text.isNotEmpty) {
             setState(() {
               _controller.text = text;
@@ -139,13 +143,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           }
         },
         onError: (error) {
+          print('Voice input error: $error');
           setState(() => _isListening = false);
           _pulseController.stop();
           _waveController.stop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Speech error: $error'),
+              content: Text('Voice input error: $error'),
               backgroundColor: const Color(0xFFEF4444),
+              duration: const Duration(seconds: 3),
             ),
           );
         },
@@ -182,106 +188,117 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildAppBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF000000).withOpacity(0.9),
-            const Color(0xFF1A0D2E).withOpacity(0.8),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: 120,
+      borderRadius: 0,
+      blur: 20,
+      alignment: Alignment.center,
+      border: 0,
+      linearGradient: LinearGradient(
+        colors: [
+          const Color(0xFF000000).withOpacity(0.3),
+          const Color(0xFF1A0D2E).withOpacity(0.2),
         ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+      borderGradient: const LinearGradient(
+        colors: [Colors.transparent, Colors.transparent],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+        child: Row(
+          children: [
+            GlassmorphicContainer(
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              blur: 10,
+              alignment: Alignment.center,
+              border: 1,
+              linearGradient: LinearGradient(
                 colors: [
-                  Color(0xFF8B5CF6),
-                  Color(0xFF7C3AED),
-                  Color(0xFFEC4899),
+                  const Color(0xFF8B5CF6).withOpacity(0.2),
+                  const Color(0xFFEC4899).withOpacity(0.2),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.memory, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
+              borderGradient: LinearGradient(
                 colors: [
-                  Color(0xFF8B5CF6),
-                  Color(0xFF7C3AED),
-                  Color(0xFFEC4899),
+                  const Color(0xFF8B5CF6).withOpacity(0.5),
+                  const Color(0xFFEC4899).withOpacity(0.5),
                 ],
-              ).createShader(bounds),
-              child: Text(
-                'RecallAI',
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
               ),
+              child: const Icon(Icons.memory, color: Colors.white, size: 24),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: _useQdrant 
-                  ? const Color(0xFF8B5CF6).withOpacity(0.2)
-                  : const Color(0xFF374151).withOpacity(0.3),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _useQdrant 
-                    ? const Color(0xFF8B5CF6)
-                    : Colors.transparent,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _useQdrant ? 'Qdrant' : 'FAISS',
-                  style: TextStyle(
-                    color: _useQdrant 
-                        ? const Color(0xFF8B5CF6)
-                        : Colors.white70,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+            const SizedBox(width: 16),
+            Expanded(
+              child: ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [
+                    Color(0xFF8B5CF6),
+                    Color(0xFF7C3AED),
+                    Color(0xFFEC4899),
+                  ],
+                ).createShader(bounds),
+                child: Text(
+                  'RecallAI',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Switch(
-                  value: _useQdrant,
-                  onChanged: (value) => setState(() => _useQdrant = value),
-                  activeColor: const Color(0xFF8B5CF6),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            GlassmorphicContainer(
+              width: 120,
+              height: 40,
+              borderRadius: 20,
+              blur: 10,
+              alignment: Alignment.center,
+              border: 1,
+              linearGradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.1),
+                  Colors.white.withOpacity(0.05),
+                ],
+              ),
+              borderGradient: LinearGradient(
+                colors: [
+                  _useQdrant 
+                      ? const Color(0xFF8B5CF6).withOpacity(0.5)
+                      : Colors.white.withOpacity(0.2),
+                  _useQdrant 
+                      ? const Color(0xFFEC4899).withOpacity(0.5)
+                      : Colors.white.withOpacity(0.1),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _useQdrant ? 'Qdrant' : 'FAISS',
+                    style: TextStyle(
+                      color: _useQdrant 
+                          ? const Color(0xFF8B5CF6)
+                          : Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Switch(
+                    value: _useQdrant,
+                    onChanged: (value) => setState(() => _useQdrant = value),
+                    activeColor: const Color(0xFF8B5CF6),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.3);
   }
@@ -416,14 +433,59 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              child: Text(
-                message.text,
-                style: GoogleFonts.inter(
-                  color: message.isUser ? Colors.white : Colors.white.withOpacity(0.9),
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-              ),
+              child: message.isUser 
+                  ? Text(
+                      message.text,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    )
+                  : MarkdownBody(
+                      data: message.text,
+                      styleSheet: MarkdownStyleSheet(
+                        p: GoogleFonts.inter(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                        code: GoogleFonts.firaCode(
+                          color: const Color(0xFF8B5CF6),
+                          fontSize: 13,
+                          backgroundColor: const Color(0xFF1A0D2E),
+                        ),
+                        codeblockDecoration: BoxDecoration(
+                          color: const Color(0xFF1A0D2E),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF8B5CF6).withOpacity(0.3)),
+                        ),
+                        blockquote: GoogleFonts.inter(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        h1: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h2: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h3: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        listBullet: GoogleFonts.inter(
+                          color: const Color(0xFF8B5CF6),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
             ).animate().fadeIn(duration: 400.ms).slideX(begin: message.isUser ? 0.3 : -0.3),
           ),
           if (message.isUser) ...[

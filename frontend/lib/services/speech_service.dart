@@ -5,13 +5,21 @@ class SpeechService {
   static bool _isInitialized = false;
   
   static Future<bool> initialize() async {
-    if (!_isInitialized) {
-      _isInitialized = await _speech.initialize(
-        onError: (error) => print('Speech error: $error'),
-        onStatus: (status) => print('Speech status: $status'),
-      );
+    try {
+      if (!_isInitialized) {
+        _isInitialized = await _speech.initialize(
+          onError: (error) => print('Speech error: $error'),
+          onStatus: (status) => print('Speech status: $status'),
+          debugLogging: true,
+        );
+        print('Speech initialized: $_isInitialized');
+        print('Speech available: ${_speech.isAvailable}');
+      }
+      return _isInitialized && _speech.isAvailable;
+    } catch (e) {
+      print('Speech initialization error: $e');
+      return false;
     }
-    return _isInitialized;
   }
   
   static bool get isListening => _speech.isListening;
@@ -21,35 +29,45 @@ class SpeechService {
     required Function(String) onResult,
     required Function(String) onError,
   }) async {
-    if (!_isInitialized) {
-      final initialized = await initialize();
-      if (!initialized) {
-        onError('Failed to initialize speech recognition');
-        return;
+    try {
+      if (!_isInitialized || !_speech.isAvailable) {
+        final initialized = await initialize();
+        if (!initialized) {
+          onError('Speech recognition not available on this device');
+          return;
+        }
       }
-    }
-    
-    if (_isInitialized && !_speech.isListening) {
-      try {
-        await _speech.listen(
-          onResult: (result) {
+      
+      if (_speech.isListening) {
+        await _speech.stop();
+      }
+      
+      await _speech.listen(
+        onResult: (result) {
+          print('Speech result: ${result.recognizedWords}');
+          if (result.recognizedWords.isNotEmpty) {
             onResult(result.recognizedWords);
-          },
-          listenFor: const Duration(seconds: 10),
-          pauseFor: const Duration(seconds: 2),
-          partialResults: true,
-          cancelOnError: true,
-          listenMode: stt.ListenMode.confirmation,
-        );
-      } catch (e) {
-        onError('Error starting speech recognition: $e');
-      }
+          }
+        },
+        listenFor: const Duration(seconds: 10),
+        pauseFor: const Duration(seconds: 2),
+        partialResults: false,
+        cancelOnError: true,
+        listenMode: stt.ListenMode.confirmation,
+      );
+    } catch (e) {
+      print('Start listening error: $e');
+      onError('Error starting speech recognition: $e');
     }
   }
   
   static Future<void> stopListening() async {
-    if (_speech.isListening) {
-      await _speech.stop();
+    try {
+      if (_speech.isListening) {
+        await _speech.stop();
+      }
+    } catch (e) {
+      print('Stop listening error: $e');
     }
   }
 }

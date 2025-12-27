@@ -35,6 +35,8 @@ dependencies:
   speech_to_text: ^6.6.0
   flutter_animate: ^4.5.0
   google_fonts: ^6.1.0
+  flutter_markdown: ^0.6.18
+  glassmorphism: ^3.0.0
 
 dev_dependencies:
   flutter_test:
