@@ -100,6 +100,7 @@ async def chat_with_history(query: str):
     """
     Streaming endpoint for chat
     """
+    logger.info("✌️ FAISS Triggered")
     logger.info(f"Received streaming chat query: {query}")
     llm = get_llm()
     embeddings_model = get_embeddings_model()

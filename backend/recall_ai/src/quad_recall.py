@@ -48,6 +48,7 @@ Question: {input}
 
 @quad_recall.get("/quad_chat", status_code=status.HTTP_200_OK)
 async def chat_with_quad_history(query: str):
+    logger.info("✌️ Quad Recall Triggered")
     llm = get_llm()
     vectorstore = get_quad_vectorstore()
 
