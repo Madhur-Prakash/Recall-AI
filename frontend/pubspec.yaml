@@ -38,6 +38,7 @@ dependencies:
   flutter_markdown: ^0.6.18
   glassmorphism: ^3.0.0
   shared_preferences: ^2.2.2
+  permission_master: ^0.0.17
 
 dev_dependencies:
   flutter_test:

@@ -312,6 +312,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  permission_master:
+    dependency: "direct main"
+    description:
+      name: permission_master
+      sha256: "19e2ce573b9c5e3bb698e76fec236d5f39be8451f80f1c76b5ea5d60b7091f76"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.17"
   platform:
     dependency: transitive
     description:

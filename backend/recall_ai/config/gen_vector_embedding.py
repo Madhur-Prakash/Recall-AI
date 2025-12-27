@@ -17,13 +17,14 @@ print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
 
 logging = setup_logging()
 
-TEXT_FILE_LIMIT = 34
+TEXT_FILE_LIMIT = 3
 
 class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.src_path.endswith(".enc"):
             enc_text_files = glob(os.path.join("images_taken", "*.enc"))
-            logging.info(f"🔄️Current encrypted text files count: {len(enc_text_files)}")
+            if len(enc_text_files) > 0:
+                logging.info(f"🔄️Current encrypted text files count: {len(enc_text_files)}")
 
             if len(enc_text_files) >= TEXT_FILE_LIMIT:
                 res = store_embeddings()
