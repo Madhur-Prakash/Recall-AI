@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'screens/chat_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const RecallAIApp());
@@ -27,7 +27,7 @@ class RecallAIApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ChatScreen(),
+      home: const SplashScreen(),
     );
   }
 }

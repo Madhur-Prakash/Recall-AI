@@ -1,90 +1,100 @@
 # Recall AI Frontend
 
-A modern Flutter desktop application for Recall AI with chat and voice input capabilities.
+A beautiful Flutter desktop application for Recall AI with modern UI, chat interface, and voice input capabilities.
 
-## Features
+## ✨ Features
 
-- 🎨 **Modern Dark UI** - Beautiful gradient-based design with smooth animations
-- 💬 **Chat Interface** - Clean and intuitive chat experience
-- 🎤 **Voice Input** - Speech-to-text functionality for hands-free interaction
-- 🔄 **Dual Backend Support** - Switch between FAISS and Qdrant vector stores
-- ⚡ **Real-time Streaming** - Live responses from the AI backend
-- 🪟 **Windows Desktop** - Optimized for Windows desktop experience
+- 🎨 **Beautiful Modern UI** - Gradient-based design with smooth animations
+- 🌟 **Splash Screen** - Animated startup with gradient "RecallAI" text
+- 💬 **Enhanced Chat Interface** - Clean bubbles with gradient backgrounds
+- 🎤 **Fixed Voice Input** - Proper speech-to-text with permission handling
+- 🔄 **Dual Backend Support** - Toggle between FAISS and Qdrant
+- ⚡ **Real-time Streaming** - Live AI responses
+- 🪟 **Windows Desktop** - Optimized for Windows
+- 🎭 **Rich Animations** - Fade-ins, slides, pulses, and loading effects
 
-## Prerequisites
-
-- Flutter SDK (3.10.1 or higher)
-- Windows 10/11
-- Running Recall AI backend server (http://127.0.0.1:8000)
-
-## Installation
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend/recall_frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-
-3. Ensure the backend server is running:
-   ```bash
-   # From the backend directory
-   uvicorn backend.app:app --reload
-   ```
-
-## Running the Application
+## 🚀 Quick Start
 
 ### Development Mode
 ```bash
-flutter run -d windows
+# Double-click or run:
+run_dev.bat
 ```
 
-### Build Release
+### Build & Run Release
 ```bash
-flutter build windows --release
+# Double-click or run:
+build_and_run.bat
 ```
 
-The executable will be located at:
-```
-build/windows/x64/runner/Release/recall_frontend.exe
-```
+## 📋 Prerequisites
 
-## Usage
+- Flutter SDK (3.10.1+)
+- Windows 10/11
+- Microphone access for voice input
+- Running backend server at http://127.0.0.1:8000
 
-1. **Text Input**: Type your question in the input field and press Enter or click the send button
-2. **Voice Input**: Click the microphone button to start voice recording, speak your question, and click again to stop
-3. **Switch Backend**: Use the toggle switch in the app bar to switch between FAISS and Qdrant backends
+## 🎯 Usage
 
-## Configuration
+1. **Splash Screen** - Beautiful animated startup (3 seconds)
+2. **Text Chat** - Type questions and get AI responses
+3. **Voice Input** - Click mic button, speak, and get automatic responses
+4. **Backend Toggle** - Switch between FAISS/Qdrant in the top bar
 
-To change the backend URL, edit `lib/services/api_service.dart`:
-```dart
-static const String baseUrl = 'http://127.0.0.1:8000';
-```
+## 🎨 UI Highlights
 
-## Troubleshooting
+- **Gradient Text** - "RecallAI" with purple-violet-pink gradient
+- **Animated Loading** - Pulsing dots with gradient colors
+- **Voice Feedback** - Pulsing red animation when listening
+- **Message Bubbles** - Gradient backgrounds for user/AI messages
+- **Empty State** - Beautiful welcome screen with animations
 
-### Speech Recognition Not Working
-- Ensure microphone permissions are granted
+## 🔧 Technical Details
+
+- **Voice Recognition** - `speech_to_text` with permission handling
+- **Animations** - `flutter_animate` for smooth effects
+- **Typography** - Google Fonts (Inter)
+- **Permissions** - `permission_handler` for microphone access
+- **HTTP** - Direct API communication with FastAPI backend
+
+## 🐛 Troubleshooting
+
+### Voice Input Issues
+- Grant microphone permissions when prompted
 - Check Windows microphone settings
-- Restart the application
+- Restart app if voice stops working
 
-### Connection Error
-- Verify the backend server is running
-- Check if the backend URL is correct
-- Ensure no firewall is blocking the connection
+### Connection Errors
+- Ensure backend is running: `uvicorn backend.app:app --reload`
+- Check firewall settings
+- Verify backend URL in `lib/services/api_service.dart`
 
-## Tech Stack
+## 📁 Project Structure
 
-- **Flutter** - UI Framework
-- **speech_to_text** - Voice input
-- **flutter_animate** - Smooth animations
-- **google_fonts** - Typography
-- **http** - API communication
+```
+frontend/
+├── lib/
+│   ├── main.dart                 # App entry with splash screen
+│   ├── models/message.dart       # Message data model
+│   ├── screens/
+│   │   ├── splash_screen.dart    # Beautiful animated splash
+│   │   └── chat_screen.dart      # Enhanced chat interface
+│   └── services/
+│       ├── api_service.dart      # Backend communication
+│       └── speech_service.dart   # Fixed voice input
+├── run_dev.bat                   # Development runner
+├── build_and_run.bat            # Release builder
+└── README.md                     # This file
+```
 
-## License
+## 🎨 Color Palette
+
+- **Purple**: `#8B5CF6` (purple-500)
+- **Violet**: `#7C3AED` (violet-500) 
+- **Pink**: `#EC4899` (pink-500)
+- **Background**: `#0F0F23` → `#1A1A2E`
+- **Cards**: `#1A1A2E` → `#16213E`
+
+## 📄 License
 
 MIT License - See main project LICENSE file

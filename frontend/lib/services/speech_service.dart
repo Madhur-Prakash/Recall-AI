@@ -6,7 +6,10 @@ class SpeechService {
   
   static Future<bool> initialize() async {
     if (!_isInitialized) {
-      _isInitialized = await _speech.initialize();
+      _isInitialized = await _speech.initialize(
+        onError: (error) => print('Speech error: $error'),
+        onStatus: (status) => print('Speech status: $status'),
+      );
     }
     return _isInitialized;
   }
@@ -19,17 +22,28 @@ class SpeechService {
     required Function(String) onError,
   }) async {
     if (!_isInitialized) {
-      await initialize();
+      final initialized = await initialize();
+      if (!initialized) {
+        onError('Failed to initialize speech recognition');
+        return;
+      }
     }
     
     if (_isInitialized && !_speech.isListening) {
-      await _speech.listen(
-        onResult: (result) => onResult(result.recognizedWords),
-        onSoundLevelChange: (level) {},
-        cancelOnError: true,
-        partialResults: true,
-        listenMode: stt.ListenMode.confirmation,
-      );
+      try {
+        await _speech.listen(
+          onResult: (result) {
+            onResult(result.recognizedWords);
+          },
+          listenFor: const Duration(seconds: 10),
+          pauseFor: const Duration(seconds: 2),
+          partialResults: true,
+          cancelOnError: true,
+          listenMode: stt.ListenMode.confirmation,
+        );
+      } catch (e) {
+        onError('Error starting speech recognition: $e');
+      }
     }
   }
   

@@ -1,4 +1,4 @@
-// import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -6,13 +6,15 @@ class ApiService {
   
   static Stream<String> chatWithFAISS(String query) async* {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/chat?query=${Uri.encodeComponent(query)}'),
-        headers: {'Accept': 'text/plain'},
-      );
+      final request = http.Request('GET', Uri.parse('$baseUrl/chat?query=${Uri.encodeComponent(query)}'));
+      request.headers['Accept'] = 'text/plain';
+      
+      final response = await request.send();
       
       if (response.statusCode == 200) {
-        yield response.body;
+        await for (List<int> chunk in response.stream) {
+          yield utf8.decode(chunk);
+        }
       } else {
         yield 'Error: ${response.statusCode}';
       }
@@ -23,13 +25,15 @@ class ApiService {
   
   static Stream<String> chatWithQdrant(String query) async* {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/quad_chat?query=${Uri.encodeComponent(query)}'),
-        headers: {'Accept': 'text/plain'},
-      );
+      final request = http.Request('GET', Uri.parse('$baseUrl/quad_chat?query=${Uri.encodeComponent(query)}'));
+      request.headers['Accept'] = 'text/plain';
+      
+      final response = await request.send();
       
       if (response.statusCode == 200) {
-        yield response.body;
+        await for (List<int> chunk in response.stream) {
+          yield utf8.decode(chunk);
+        }
       } else {
         yield 'Error: ${response.statusCode}';
       }
