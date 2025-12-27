@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'services/settings_service.dart';
+import 'services/theme_service.dart';
 import 'screens/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SettingsService.init();
   runApp(const RecallAIApp());
 }
 
@@ -11,23 +15,16 @@ class RecallAIApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Recall AI',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.dark,
-        ),
-        textTheme: GoogleFonts.interTextTheme(
-          Theme.of(context).textTheme,
-        ).apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-        ),
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(),
+    return AnimatedBuilder(
+      animation: ThemeService(),
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Recall AI',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeService().currentTheme,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

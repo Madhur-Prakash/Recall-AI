@@ -6,6 +6,9 @@ import 'package:glassmorphism/glassmorphism.dart';
 import '../models/message.dart';
 import '../services/api_service.dart';
 import '../services/speech_service.dart';
+import '../services/settings_service.dart';
+import '../services/theme_service.dart';
+import 'settings_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -20,9 +23,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<Message> _messages = [];
   bool _isLoading = false;
   bool _isListening = false;
-  bool _useQdrant = false;
   late AnimationController _pulseController;
   late AnimationController _waveController;
+
+  late bool _useQdrant;
+  late VoidCallback _vectorStoreListener;
+  late VoidCallback _themeListener;
 
   @override
   void initState() {
@@ -35,6 +41,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
+    _useQdrant = SettingsService.vectorStore == 'Qdrant';
+    _vectorStoreListener = () {
+      setState(() {
+        _useQdrant = SettingsService.vectorStore == 'Qdrant';
+      });
+    };
+    SettingsService.vectorStoreNotifier.addListener(_vectorStoreListener);
+    _themeListener = () {
+      setState(() {});
+    };
+    SettingsService.darkModeNotifier.addListener(_themeListener);
     _initializeSpeech();
   }
 
@@ -44,6 +61,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _waveController.dispose();
     _controller.dispose();
     _scrollController.dispose();
+    SettingsService.vectorStoreNotifier.removeListener(_vectorStoreListener);
+    SettingsService.darkModeNotifier.removeListener(_themeListener);
     super.dispose();
   }
 
@@ -106,6 +125,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _toggleListening() async {
+    if (!SettingsService.voiceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Voice input is disabled in settings'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+      return;
+    }
+    
     if (_isListening) {
       await SpeechService.stopListening();
       _pulseController.stop();
@@ -163,15 +192,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF1A0D2E),
-              Color(0xFF2D1B3D),
-            ],
+            colors: ThemeService().backgroundGradient,
           ),
         ),
         child: Column(
@@ -251,6 +276,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                );
+              },
+              icon: const Icon(Icons.settings, color: Colors.white),
+            ),
             GlassmorphicContainer(
               width: 120,
               height: 40,
@@ -290,7 +324,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   const SizedBox(width: 8),
                   Switch(
                     value: _useQdrant,
-                    onChanged: (value) => setState(() => _useQdrant = value),
+                    onChanged: (value) async {
+                      await SettingsService.setVectorStore(value ? 'Qdrant' : 'FAISS');
+                    },
                     activeColor: const Color(0xFF8B5CF6),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),

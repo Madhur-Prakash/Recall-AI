@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'settings_service.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static String get baseUrl => SettingsService.serverUrl;
   
   static Stream<String> chatWithFAISS(String query) async* {
     try {
