@@ -13,6 +13,7 @@ load_dotenv()
 recall = APIRouter()
 
 logger = setup_logging()
+FAISS_VECTOR_STORE_DIR = os.getenv('FAISS_VECTOR_STORE_DIR')
 
 # Prompt template
 prompt = ChatPromptTemplate.from_template("""
@@ -60,7 +61,7 @@ async def get_chat_response(query: str) -> str:
 
     if vectorstore is None:
         try:
-            load_path = os.path.join(os.getcwd(), "img_vector_store")
+            load_path = os.path.join(FAISS_VECTOR_STORE_DIR)
             vectorstore = FAISS.load_local(load_path, embeddings_model, allow_dangerous_deserialization=True)
             logger.info("Vector store loaded successfully.")
         
@@ -108,7 +109,7 @@ async def chat_with_history(query: str):
 
     if vectorstore is None:
         try:
-            load_path = os.path.join(os.getcwd(), "img_vector_store")
+            load_path = os.path.join(FAISS_VECTOR_STORE_DIR)
             vectorstore = FAISS.load_local(load_path, embeddings_model, allow_dangerous_deserialization=True)
             logger.info("Vector store loaded successfully.")
         

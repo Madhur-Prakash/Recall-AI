@@ -15,6 +15,7 @@ services:
             dockerfile: Dockerfile.recall
         volumes:
             - C:/recall_ai/images_taken:/recall_ai/images_taken
+            - C:/recall_ai/img_vector_store:/recall_ai/img_vector_store
         ports:
             - "8005:8005"
         depends_on:
@@ -31,6 +32,7 @@ services:
             - .env
         volumes:
             - C:/recall_ai/images_taken:/recall_ai/images_taken
+            - C:/recall_ai/img_vector_store:/recall_ai/img_vector_store
         command: ["python", "recall_ai/config/gen_vector_embedding.py"]
 
     quadrant-store:

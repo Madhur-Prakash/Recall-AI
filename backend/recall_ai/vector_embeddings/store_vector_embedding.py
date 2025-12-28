@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 logger = setup_logging()
 IMAGE_DIR = os.getenv("IMAGES_DIR")
+FAISS_VECTOR_STORE_DIR = os.getenv('FAISS_VECTOR_STORE_DIR')
 
 def store_embeddings(text_dir: str = IMAGE_DIR):
     try:
@@ -52,7 +53,7 @@ def store_embeddings(text_dir: str = IMAGE_DIR):
         chunked_texts = [f"passage: {doc.page_content}" for doc in documents]
         logger.info(f"Chunked into {len(chunked_texts)} documents")
 
-        vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
+        vector_store_path = os.path.join(FAISS_VECTOR_STORE_DIR)
         index_path = os.path.join(vector_store_path, "index.faiss")
         embeddings_model = get_embeddings_model()
         

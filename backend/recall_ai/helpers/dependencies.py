@@ -14,6 +14,7 @@ load_dotenv()
 
 logger = setup_logging()
 DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
+FAISS_VECTOR_STORE_DIR = os.getenv('FAISS_VECTOR_STORE_DIR')
 
 faiss_vectorstore = None
 qdrant_vectorstore = None
@@ -45,7 +46,7 @@ def get_vectorstore():
         logger.info("Loading vector store from disk...")
         start = time.time()
         embeddings = get_embeddings_model()
-        vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
+        vector_store_path = os.path.join(FAISS_VECTOR_STORE_DIR)
         try:
             faiss_vectorstore = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
             logger.info(f"Vector store loaded in {time.time() - start:.2f} seconds")
