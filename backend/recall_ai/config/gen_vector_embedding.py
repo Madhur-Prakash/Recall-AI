@@ -17,7 +17,7 @@ print(f"Time taken to import store_embeddings: {fn:.2f} seconds")
 
 logging = setup_logging()
 
-TEXT_FILE_LIMIT = 3
+TEXT_FILE_LIMIT = 34
 
 class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
