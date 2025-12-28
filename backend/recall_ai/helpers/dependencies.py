@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from langchain_qdrant import Qdrant
+from langchain_qdrant import QdrantVectorStore
 import os
 import time
 from functools import cache
@@ -84,10 +84,10 @@ def get_quad_vectorstore():
                 )
                 logger.info(f"✅ Created collection '{collection_name}'")
             
-            vectorstore = Qdrant(
+            vectorstore = QdrantVectorStore(
                 client=client,
                 collection_name=collection_name,
-                embeddings=embeddings,
+                embedding=embeddings,
             )
             logger.info("✅ Qdrant vector store initialized.")
         except Exception as e:

@@ -4,7 +4,7 @@ import glob
 import shutil
 import time
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_qdrant import Qdrant
+from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, Filter, FieldCondition, Range, FilterSelector
 from recall_ai.helpers.dependencies import get_embeddings_model
@@ -83,7 +83,7 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
         # Use float timestamp for metadata
         now_ts = time.time()
         try:
-            Qdrant.from_texts(
+            QdrantVectorStore.from_texts(
                 texts=chunked_texts,
                 embedding=embeddings_model,
                 metadatas=[{"timestamp": now_ts}] * len(chunked_texts),  # float timestamp
@@ -125,7 +125,7 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
                 f"🧹 Deleted {points_to_delete} embeddings older than {cutoff_human}"
             )
         else:
-            logger.debug("🧹 No old embeddings to delete")
+            logger.info("🧹 No old embeddings to delete")
 
         # Reset image directory
         for text_file in text_files:

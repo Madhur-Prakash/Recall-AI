@@ -114,5 +114,5 @@ async def chat_with_quad_history(query: str):
         return StreamingResponse(stream_generator(), media_type="text/plain")
 
     except Exception as e:
-        logger.error(f"❌ Streaming chat error: {e}")
+        logger.error(f"❌ Qdrant chat error: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
