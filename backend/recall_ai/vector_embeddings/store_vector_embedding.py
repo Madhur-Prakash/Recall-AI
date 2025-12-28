@@ -9,7 +9,7 @@ from recall_ai.helpers.dependencies import get_embeddings_model
 import recall_ai.helpers.dependencies as deps
 from recall_ai.helpers.utils import setup_logging, get_file_creation_age
 from langchain_community.vectorstores import FAISS
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = setup_logging()
 

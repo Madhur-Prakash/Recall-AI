@@ -18,14 +18,9 @@ torchvision>=0.5
 faiss-cpu
 sentence-transformers
 itsdangerous
-speechrecognition
-pyaudio
-pyttsx3
 watchdog
 qdrant-client  
 cryptography
-sounddevice 
-librosa
 -f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
 paddlepaddle-gpu==2.6.2
 paddleocr
