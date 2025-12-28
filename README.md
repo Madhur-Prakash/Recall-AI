@@ -51,21 +51,25 @@ Recall AI is an innovative intelligent memory system that captures user activity
 
 ## 🛠️ Technology Stack
 
-<div align="center">
+### 🐍 **Backend Technologies**
+| Technology | Purpose | Version |
+|------------|---------|----------|
+| ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white) | Core Language | 3.8+ |
+| ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat&logo=fastapi&logoColor=white) | Web Framework | Latest |
+| ![Tesseract](https://img.shields.io/badge/-Tesseract-4285F4?style=flat&logo=google&logoColor=white) | OCR Engine | 5.0+ |
+| ![OpenCV](https://img.shields.io/badge/-OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white) | Image Processing | Latest |
+| ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat&logo=huggingface&logoColor=black) | Embeddings | Transformers |
+| ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat&logo=meta&logoColor=white) | Vector Search | CPU |
+| ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | Client |
+| ![Groq](https://img.shields.io/badge/-Groq-000000?style=flat&logo=groq&logoColor=white) | LLM Provider | API |
 
-| 🐍 **Backend Technologies** | | 📱 **Frontend Technologies** | |
-|------------|---------|------------|----------|
-| Technology | Purpose | Technology | Purpose |
-| ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white) | Core Language (3.8+) | ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat&logo=flutter&logoColor=white) | UI Framework (3.10.1+) |
-| ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat&logo=fastapi&logoColor=white) | Web Framework | ![Dart](https://img.shields.io/badge/-Dart-0175C2?style=flat&logo=dart&logoColor=white) | Programming Language (3.0+) |
-| ![Tesseract](https://img.shields.io/badge/-Tesseract-4285F4?style=flat&logo=google&logoColor=white) | OCR Engine (5.0+) | ![Material](https://img.shields.io/badge/-Material_Design-757575?style=flat&logo=material-design&logoColor=white) | Design System (3.0) |
-| ![OpenCV](https://img.shields.io/badge/-OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white) | Image Processing | ![Windows](https://img.shields.io/badge/-Windows-0078D4?style=flat&logo=windows&logoColor=white) | Target Platform (10/11) |
-| ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat&logo=huggingface&logoColor=black) | Embeddings | ![Glassmorphism](https://img.shields.io/badge/-Glassmorphism-9333EA?style=flat&logo=css3&logoColor=white) | UI Effects |
-| ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat&logo=meta&logoColor=white) | Vector Search (CPU) | ![Speech](https://img.shields.io/badge/-Speech_to_Text-4285F4?style=flat&logo=google&logoColor=white) | Voice Input |
-| ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | ![Markdown](https://img.shields.io/badge/-Markdown-000000?style=flat&logo=markdown&logoColor=white) | Rich Text Support |
-| ![Groq](https://img.shields.io/badge/-Groq-000000?style=flat&logo=groq&logoColor=white) | LLM Provider (API) | ![Animations](https://img.shields.io/badge/-Flutter_Animate-02569B?style=flat&logo=flutter&logoColor=white) | Smooth Animations |
-
-</div>
+### 📱 **Frontend Technologies**
+| Technology | Purpose | Version |
+|------------|---------|----------|
+| ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat&logo=flutter&logoColor=white) | UI Framework | 3.10.1+ |
+| ![Dart](https://img.shields.io/badge/-Dart-0175C2?style=flat&logo=dart&logoColor=white) | Programming Language | 3.0+ |
+| ![Material](https://img.shields.io/badge/-Material_Design-757575?style=flat&logo=material-design&logoColor=white) | Design System | 3.0 |
+| ![Windows](https://img.shields.io/badge/-Windows-0078D4?style=flat&logo=windows&logoColor=white) | Target Platform | 10/11 |
 
 ---
 
