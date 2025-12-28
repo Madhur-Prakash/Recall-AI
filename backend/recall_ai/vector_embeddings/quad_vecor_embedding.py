@@ -57,9 +57,14 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
         # Prepare Qdrant
         embeddings_model = get_embeddings_model()
         if DEVELOPMENT_ENV == "docker":
-                client = QdrantClient("qdrant", port=6333)
+            qdrant_host = "qdrant"  # Docker Compose service name
         else:
-            client = QdrantClient("localhost", port=6333)
+            qdrant_host = "localhost"
+        try:
+            client = QdrantClient(host=qdrant_host, port=6333)
+        except Exception as conn_err:
+            logger.error(f"❌ Could not connect to Qdrant at {qdrant_host}:6333 - {conn_err}")
+            return {"error": str(conn_err)}
         collection_name = "img_embeddings"
 
         # Auto-create collection if it doesn't exist
@@ -76,12 +81,17 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
 
         # Use float timestamp for metadata
         now_ts = time.time()
-        Qdrant.from_texts(
-            texts=chunked_texts,
-            embedding=embeddings_model,
-            metadatas=[{"timestamp": now_ts}] * len(chunked_texts),  # float timestamp
-            collection_name=collection_name
-        )
+        try:
+            Qdrant.from_texts(
+                texts=chunked_texts,
+                embedding=embeddings_model,
+                metadatas=[{"timestamp": now_ts}] * len(chunked_texts),  # float timestamp
+                collection_name=collection_name,
+                url=f"http://{qdrant_host}:6333"
+            )
+        except Exception as qdrant_err:
+            logger.error(f"❌ Error storing embeddings in Qdrant: {qdrant_err}")
+            return {"error": str(qdrant_err)}
 
         # Confirm insertion
         count = client.count(collection_name=collection_name).count
