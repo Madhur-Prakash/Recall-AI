@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import Qdrant
 import os
 import time
 from functools import cache
@@ -15,13 +15,16 @@ load_dotenv()
 logger = setup_logging()
 DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
 
-vectorstore = None
+faiss_vectorstore = None
+qdrant_vectorstore = None
 
 @cache
 def get_llm():
     logger.info("Initializing LLM model...")
     start = time.time()
     groq_api_key = os.getenv('GROQ_API_KEY')
+    if not groq_api_key:
+        raise RuntimeError("❌ GROQ_API_KEY is missing in environment")
     llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
     logger.info(f"LLM initialized in {time.time() - start:.2f} seconds")
     return llm
@@ -37,32 +40,29 @@ def get_embeddings_model():
 
 
 def get_vectorstore():
-    global vectorstore
-    if vectorstore is None:
+    global faiss_vectorstore
+    if faiss_vectorstore is None:
         logger.info("Loading vector store from disk...")
         start = time.time()
         embeddings = get_embeddings_model()
         vector_store_path = os.path.join(os.getcwd(), "img_vector_store")
         try:
-            vectorstore = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
+            faiss_vectorstore = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
             logger.info(f"Vector store loaded in {time.time() - start:.2f} seconds")
         except Exception as e:
             logger.error(f"Failed to load vector store: {e}")
-            vectorstore = None
-    return vectorstore
+            faiss_vectorstore = None
+    return faiss_vectorstore
 
 
 
 def get_quad_vectorstore():
-    global vectorstore
-    if vectorstore is None:
+    global qdrant_vectorstore
+    if qdrant_vectorstore is None:
         logger.info("Connecting to Qdrant...")
         try:
             embeddings = get_embeddings_model()
-            if DEVELOPMENT_ENV == "docker":
-                client = QdrantClient("qdrant", port=6333)
-            else:
-                client = QdrantClient("localhost", port=6333)
+            client = QdrantClient(host="qdrant" if DEVELOPMENT_ENV == "docker" else "localhost", port=6333)
             collection_name = "img_embeddings"
             
             # Check if collection exists, if not create it

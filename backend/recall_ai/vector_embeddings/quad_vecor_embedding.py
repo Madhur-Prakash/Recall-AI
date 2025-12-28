@@ -1,9 +1,10 @@
+import datetime
 import os
 import glob
 import shutil
 import time
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, Filter, FieldCondition, Range, FilterSelector
 from recall_ai.helpers.dependencies import get_embeddings_model
@@ -99,6 +100,7 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
 
         # Clear old embeddings (older than 30 days)
         cutoff_ts = time.time() - (30 * 24 * 60 * 60)
+        cutoff_human = datetime.datetime.fromtimestamp(cutoff_ts).isoformat()
         timestamp_filter = Filter(
             must=[
                 FieldCondition(
@@ -108,15 +110,27 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
             ]
         )
 
-        deleted_count = client.delete(
+        # Count points that match the filter BEFORE deletion
+        points_to_delete = client.count(
             collection_name=collection_name,
-            points_selector=FilterSelector(filter=timestamp_filter)
-        )
-        logger.info(f"🧹 Deleted old embeddings older than {cutoff_ts}: {deleted_count}")
+            count_filter=timestamp_filter
+        ).count
+
+        if points_to_delete > 0:
+            client.delete(
+                collection_name=collection_name,
+                points_selector=FilterSelector(filter=timestamp_filter)
+            )
+            logger.info(
+                f"🧹 Deleted {points_to_delete} embeddings older than {cutoff_human}"
+            )
+        else:
+            logger.debug("🧹 No old embeddings to delete")
 
         # Reset image directory
         for text_file in text_files:
-            os.remove(text_file)
+            if os.path.exists(text_file):
+                os.remove(text_file)
         os.makedirs(text_dir, exist_ok=True)
         logger.info(f"✅ Cleared and recreated image directory: {text_dir}")
 

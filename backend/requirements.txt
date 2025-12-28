@@ -14,6 +14,7 @@ python-dotenv
 langchain_community
 langchain_core
 scikit-learn
+langchain-qdrant
 torchvision>=0.5
 faiss-cpu
 sentence-transformers

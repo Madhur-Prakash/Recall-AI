@@ -91,7 +91,8 @@ def store_embeddings(text_dir: str = IMAGE_DIR):
         deps.vectorstore = None
 
         for text_file in text_files:
-            os.remove(text_file)
+            if os.path.exists(text_file):
+                os.remove(text_file)
         logger.info(f"✅ Cleared image directory {text_dir}")
         os.makedirs(text_dir, exist_ok=True)
         logger.info(f"✅ Created new image directory {text_dir}")

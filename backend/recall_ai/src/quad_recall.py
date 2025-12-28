@@ -1,4 +1,5 @@
 import asyncio
+import os
 from fastapi.responses import StreamingResponse
 from fastapi import status, HTTPException, APIRouter
 from qdrant_client import QdrantClient
@@ -11,6 +12,7 @@ load_dotenv()
 quad_recall = APIRouter()
 
 logger = setup_logging()
+DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
 
 # Prompt template
 prompt = ChatPromptTemplate.from_template("""
@@ -58,7 +60,7 @@ async def chat_with_quad_history(query: str):
 
     try:
         # Check if collection has any data
-        client = QdrantClient("localhost", port=6333)
+        client = QdrantClient(host="qdrant" if DEVELOPMENT_ENV == "docker" else "localhost", port=6333)
         collection_info = client.get_collection("img_embeddings")
 
         # logger.info(f"Collection info: {collection_info}")
