@@ -10,3 +10,4 @@ img_vector_store
 *.key
 data-qdrant
 data-recall
+.venv
