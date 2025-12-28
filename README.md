@@ -1,185 +1,405 @@
-# Recall AI
+<div align="center">
 
-**An Advanced FastAPI-Based Intelligent Memory System**
+# 🧠 Recall AI
 
----
-## Overview
-Recall AI is an innovative intelligent memory system that captures user activity through periodic screenshots, extracts text using OCR, and applies intelligent filters to remove sensitive information. The system then encrypts the cleaned text and converts it into vector embeddings for semantic search and contextual recall.
-A standout feature of Recall AI is that users can interact with the integrated large language model (LLM) to ask questions and get meaningful responses based on the specific tasks they were performing, enabling a context-aware, task-focused conversational experience.
+**An Advanced FastAPI-Based Intelligent Memory System with Modern Flutter Frontend**
 
----
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![OCR](https://img.shields.io/badge/OCR-Tesseract-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://github.com/tesseract-ocr/tesseract)
+[![Vector DB](https://img.shields.io/badge/Vector_DB-FAISS_+_Qdrant-FF6B6B?style=for-the-badge)](#)
+[![LLM](https://img.shields.io/badge/LLM-Groq-000000?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
 
-## 🚀 **Frontend Development Update & Contribution Invitation**  
-
-The frontend of **Recall AI** is currently under active development and will be released soon. Meanwhile, the backend is fully functional and ready to use.   
-
-For the frontend, I am specifically looking to develop a **desktop application** that offers an intuitive, responsive, and feature-rich interface for interacting with Recall AI’s backend services.  
-
-If you're interested in contributing to the frontend and helping improve the user experience, feel free to fork the repository, work on the frontend, and submit a pull request. Contributions are welcome and will help bring Recall AI to life faster.
+</div>
 
 ---
 
-## Features
-- **Continuous Activity Capture**: Periodically takes screenshots to capture user activity.
-- **Intelligent Text Extraction**: Uses OCR to extract text from screenshots and applies filters to remove sensitive information.
-- **Vector Embeddings**: Converts cleaned text into vector embeddings for efficient semantic search and contextual recall.
-- **Flexible Storage Options**: Supports both FAISS for lightweight, local vector search and Qdrant for scalable, high-performance vector database operations.
-- **Retrieval-Augmented Generation (RAG)**: Enables natural language querying of past activity with context-aware responses and strict privacy guardrails.
-- **Real-Time LLM Streaming**: Ensures instant responses with asynchronous or synchronous model streaming.
+## 🌟 Overview
+
+Recall AI is an innovative intelligent memory system that captures user activity through periodic screenshots, extracts text using advanced OCR technology, and applies intelligent filters to remove sensitive information. The system encrypts cleaned text and converts it into vector embeddings for semantic search and contextual recall.
+
+**🎯 Key Innovation**: Users can interact with an integrated large language model (LLM) to ask questions and get meaningful responses based on their specific activities, enabling a context-aware, task-focused conversational experience.
 
 ---
 
-## Technology Stack
-- **Backend Framework**: FastAPI
-- **Storage Backends**: FAISS, Qdrant
-- **OCR Engine**: Tesseract-OCR
-- **Programming Language**: Python
+## ✨ Features
+
+### 🖥️ **Backend Capabilities**
+- 📸 **Continuous Activity Capture** - Automated screenshot capture with MSS
+- 🔍 **Advanced OCR Processing** - Tesseract & PaddleOCR for text extraction
+- 🛡️ **Privacy Protection** - Intelligent filtering of sensitive information
+- 🔐 **Data Encryption** - AES encryption for stored text data
+- 🧠 **Vector Embeddings** - Semantic search with HuggingFace transformers
+- 🗄️ **Dual Storage Options** - FAISS (local) & Qdrant (scalable) vector databases
+- 🤖 **RAG Implementation** - Retrieval-Augmented Generation with Groq LLM
+- ⚡ **Real-Time Streaming** - Async/sync model streaming responses
+- 📊 **Comprehensive Logging** - Detailed activity and error tracking
+- 👀 **File Watching** - Automatic processing with Watchdog
+
+### 📱 **Frontend Features**
+- 🎨 **Modern Flutter UI** - Beautiful glassmorphism design
+- 🌙 **Dual Themes** - Animated dark/light mode switching
+- 💬 **Enhanced Chat Interface** - Markdown support with syntax highlighting
+- 🎤 **Voice Input** - Speech-to-text with Windows integration
+- ⚙️ **Settings Management** - Persistent configuration storage
+- 🔄 **Backend Switching** - Toggle between FAISS/Qdrant
+- 📡 **Real-Time Streaming** - Live response display
+- 🪟 **Windows Desktop** - Optimized for Windows 10/11
 
 ---
 
-## Installation
+## 🛠️ Technology Stack
 
-> 📌 **Important:**  
-> - For Docker setup, set `DEVELOPMENT_ENV = "docker"` in your `.env` file.  
-> - For local development, either set `DEVELOPMENT_ENV = "local"` or comment out the line entirely.  
->  
-> This ensures the application loads the correct configuration and prevents environment-related issues.
+### 🐍 **Backend Technologies**
+| Technology | Purpose | Version |
+|------------|---------|----------|
+| ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white) | Core Language | 3.8+ |
+| ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat&logo=fastapi&logoColor=white) | Web Framework | Latest |
+| ![Tesseract](https://img.shields.io/badge/-Tesseract-4285F4?style=flat&logo=google&logoColor=white) | OCR Engine | 5.0+ |
+| ![OpenCV](https://img.shields.io/badge/-OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white) | Image Processing | Latest |
+| ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat&logo=huggingface&logoColor=black) | Embeddings | Transformers |
+| ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat&logo=meta&logoColor=white) | Vector Search | CPU |
+| ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | Client |
+| ![Groq](https://img.shields.io/badge/-Groq-000000?style=flat&logo=groq&logoColor=white) | LLM Provider | API |
+
+### 📱 **Frontend Technologies**
+| Technology | Purpose | Version |
+|------------|---------|----------|
+| ![Flutter](https://img.shields.io/badge/-Flutter-02569B?style=flat&logo=flutter&logoColor=white) | UI Framework | 3.10.1+ |
+| ![Dart](https://img.shields.io/badge/-Dart-0175C2?style=flat&logo=dart&logoColor=white) | Programming Language | 3.0+ |
+| ![Material](https://img.shields.io/badge/-Material_Design-757575?style=flat&logo=material-design&logoColor=white) | Design System | 3.0 |
+| ![Windows](https://img.shields.io/badge/-Windows-0078D4?style=flat&logo=windows&logoColor=white) | Target Platform | 10/11 |
 
 ---
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Madhur-Prakash/Recall-AI.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd Recall-AI
-   ```
-3. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate   # On Windows: venv\Scripts\activate
-   ```
-4. Install dependencies:
-   ```bash
-   pip install -r backend/requirements.txt
-   ```
-5. Set up the backend:
-   - Configure the storage backend (FAISS or Qdrant) according to your preference.
-   - Ensure the necessary dependencies for OCR and vector embeddings are installed.
+## 🚀 Quick Start
 
-6. Install Tesseract OCR:
-   ```bash
-   Download and install from:
-   https://github.com/UB-Mannheim/tesseract/wiki   # Follow installation instructions
-   Ensure pytesseract can access the installed binary.
-   ```
+### 📋 Prerequisites
 
-7. Set up environment variables:
+#### 🐍 Backend Requirements
+- ![Python](https://img.shields.io/badge/-Python_3.8+-3776AB?style=flat&logo=python&logoColor=white)
+- ![Tesseract](https://img.shields.io/badge/-Tesseract_OCR-4285F4?style=flat&logo=google&logoColor=white) - [Download Here](https://github.com/UB-Mannheim/tesseract/wiki)
+- ![Groq](https://img.shields.io/badge/-Groq_API_Key-000000?style=flat&logo=groq&logoColor=white) - [Get API Key](https://console.groq.com)
 
-``` bash
-# Copy the .env.sample file to .env and fill in the required values.
-# .env file should be in the backend directory.
+#### 📱 Frontend Requirements
+- ![Flutter](https://img.shields.io/badge/-Flutter_SDK-02569B?style=flat&logo=flutter&logoColor=white) (3.10.1+)
+- ![Windows](https://img.shields.io/badge/-Windows_10/11-0078D4?style=flat&logo=windows&logoColor=white)
+- ![Visual Studio](https://img.shields.io/badge/-Visual_Studio_Build_Tools-5C2D91?style=flat&logo=visual-studio&logoColor=white)
+
+### 📥 Installation
+
+#### 1️⃣ **Clone Repository**
+```bash
+git clone https://github.com/Madhur-Prakash/Recall-AI.git
+cd Recall-AI
 ```
 
-## Usage
-1. Go to Backend directory:
-   ```bash
-   cd backend
-   ```
-2. Start the screen capture script
-   ```bash
-   python recall_ai/src/mss_screen.py
-   ```
-3. Start the WatchDog worker:
-   - For Qdrant (Vector DB):
-   ```bash
-   python recall_ai/config/quad_gen_vector_embedding.py
-   ```
+#### 2️⃣ **Backend Setup**
+```bash
+# Navigate to backend
+cd backend
 
-   - For FAISS (In-memory DB):
-   ```bash
-   python recall_ai/config/gen_vector_embedding.py
-   ```
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
 
-4. Start the FastAPI server:
-   ```bash
-   uvicorn backend.app:app --reload
-   ```
-5. Access the API documentation at:
-   ```
-   http://127.0.0.1:8000/docs
-   ```
-   ---
+# Install dependencies
+pip install -r requirements.txt
 
-## API Endpoints
-### Activity Capture Endpoints
-- **POST /quad_chat**: Chat with history using the index stored in Qdrant.
-- **POST /chat**: Chat with history using the index stored in FAISS.
+# Setup environment variables
+copy .env.sample .env
+# Edit .env with your GROQ_API_KEY
+```
+
+#### 3️⃣ **Frontend Setup**
+```bash
+# Navigate to frontend
+cd ../frontend
+
+# Install Flutter dependencies
+flutter pub get
+
+# Build for Windows
+flutter build windows --release
+```
+
+#### 4️⃣ **Tesseract Installation**
+1. Download from [Tesseract Wiki](https://github.com/UB-Mannheim/tesseract/wiki)
+2. Install with default settings
+3. Add to PATH: `C:\Program Files\Tesseract-OCR`
+4. Verify: `tesseract --version`
+
 ---
 
-## Project Structure
-```plaintext
+## 🎮 Usage
+
+### 🖥️ **Backend Services**
+
+#### 1️⃣ **Start Screen Capture**
+```bash
+cd backend
+python recall_ai/src/mss_screen.py
+```
+
+#### 2️⃣ **Start Vector Processing**
+
+**For FAISS (Local):**
+```bash
+python recall_ai/config/gen_vector_embedding.py
+```
+
+**For Qdrant (Cloud):**
+```bash
+# Start Qdrant server first
+docker run -p 6333:6333 qdrant/qdrant
+
+# Then start processing
+python recall_ai/config/quad_gen_vector_embedding.py
+```
+
+#### 3️⃣ **Start API Server**
+```bash
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 📱 **Frontend Application**
+
+#### 🚀 **Development Mode**
+```bash
+cd frontend
+flutter run -d windows
+```
+
+#### 📦 **Production Build**
+```bash
+flutter build windows --release
+# Executable: build/windows/x64/runner/Release/recall_frontend.exe
+```
+
+---
+
+## 🌐 API Endpoints
+
+### 📡 **Chat Endpoints**
+| Endpoint | Method | Description | Vector Store |
+|----------|--------|-------------|--------------|
+| `/chat` | GET | Chat with FAISS backend | ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat) |
+| `/quad_chat` | GET | Chat with Qdrant backend | ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat) |
+| `/docs` | GET | Interactive API documentation | - |
+| `/` | GET | Health check endpoint | - |
+
+### 📝 **Example Request**
+```bash
+curl "http://localhost:8000/chat?query=What was I working on yesterday?"
+```
+
+---
+
+## 📁 Project Structure
+
+```
 RecallAI/
-├── .gitignore  # gitignore file for GitHub
-├── README.md  # Project documentation
-├── backend
-│   ├── Dockerfile
-│   ├── __init__.py  # initializes package
-│   ├── app.py  # main FastAPI app
-│   ├── docker-compose.yml
-│   ├── recall_ai
-│   │   ├── __init__.py  # initializes package
-│   │   ├── config
-│   │   │   ├── __init__.py  # initializes package
-│   │   │   ├── gen_vector_embedding.py
-│   │   │   └── quad_gen_vector_embedding.py
-│   │   ├── helpers
-│   │   │   ├── __init__.py  # initializes package
-│   │   │   ├── dependencies.py
-│   │   │   ├── screen_shot.py
-│   │   │   ├── utils.py
-│   │   │   └── watch.py
-│   │   ├── src
-│   │   │   ├── __init__.py  # initializes package
-│   │   │   ├── mss_screen.py
-│   │   │   ├── quad_recall.py
-│   │   │   └── recall.py
-│   │   └── vector_embeddings
-│   │       ├── __init__.py  # initializes package
-│   │       ├── quad_vecor_embedding.py
-│   │       └── store_vector_embedding.py
-│   ├── requirements.txt
-│   └── voice_config
-│       ├── __init__.py  # initializes package
-│       ├── voice-assistant.html
-│       ├── voice.py
-│       └── voice_api.py
-└── frontend
-    └── .gitkeep
+├── 🐍 backend/                     # Python FastAPI Backend
+│   ├── 📸 images_taken/            # Encrypted screenshot data
+│   ├── 🗄️ img_vector_store/        # FAISS vector database
+│   ├── 📊 logs/                    # Application logs
+│   ├── 🧠 recall_ai/              # Core application
+│   │   ├── ⚙️ config/              # Vector processing workers
+│   │   ├── 🛠️ helpers/             # Utility functions
+│   │   ├── 🚀 src/                 # Main application logic
+│   │   └── 🔢 vector_embeddings/   # Embedding processing
+│   ├── 🌐 app.py                   # FastAPI application
+│   ├── 📋 requirements.txt         # Python dependencies
+│   └── 🔐 .env.sample             # Environment template
+├── 📱 frontend/                    # Flutter Desktop App
+│   ├── 📚 lib/                     # Dart source code
+│   │   ├── 📄 models/              # Data models
+│   │   ├── 🖼️ screens/             # UI screens
+│   │   ├── 🔧 services/            # Business logic
+│   │   └── 🎯 main.dart           # App entry point
+│   ├── 🪟 windows/                 # Windows-specific files
+│   └── 📦 pubspec.yaml            # Flutter dependencies
+├── 📄 README.md                   # This file
+└── 📜 LICENSE                     # MIT License
 ```
+
 ---
 
-## Future Enhancements
-- **Improve OCR Accuracy**: Integrate more advanced OCR engines for better text extraction accuracy.
-- **Enhance Query Capabilities**: Develop more sophisticated natural language processing techniques for querying past activity.
-- **Expand Storage Options**: Support additional storage backends for increased flexibility.
+## ⚙️ Configuration
+
+### 🔧 **Backend Settings**
+
+#### 📝 **Environment Variables (.env)**
+```env
+GROQ_API_KEY="your_groq_api_key_here"
+SESSION_SECRET_KEY="your_session_secret"
+DEVELOPMENT_ENV="local"  # or "docker"
+```
+
+#### 🎛️ **Key Parameters**
+- **Screenshot Interval**: 30 seconds (configurable in `mss_screen.py`)
+- **Text File Limit**: 34 files before processing (configurable in `gen_vector_embedding.py`)
+- **Vector Dimensions**: 384 (sentence-transformers/all-MiniLM-L6-v2)
+- **Retrieval Count**: 16 documents per query
+
+### 📱 **Frontend Settings**
+
+#### ⚙️ **Available Options**
+- 🌙 **Theme Mode**: Dark/Light with animated transitions
+- 🎤 **Voice Input**: Enable/disable speech recognition
+- 🗄️ **Vector Store**: Switch between FAISS/Qdrant
+- 🌐 **Server URL**: Configure backend endpoint
+
 ---
 
-## Contribution Guidelines
+## 🔒 Privacy & Security
+
+### 🛡️ **Privacy Protection**
+- **Sensitive Data Filtering**: Automatic removal of passwords, API keys, tokens
+- **Local Processing**: OCR and filtering happen locally
+- **Encrypted Storage**: AES encryption for all text data
+- **No Cloud Dependencies**: Can run completely offline (FAISS mode)
+
+### 🔐 **Security Features**
+- **Data Encryption**: AES-256 encryption for stored text
+- **Session Management**: Secure session handling
+- **Input Validation**: Comprehensive request validation
+- **Error Handling**: Secure error responses without data leakage
+
+---
+
+## 🚀 Performance
+
+### ⚡ **Optimization Features**
+- **Async Processing**: Non-blocking I/O operations
+- **Streaming Responses**: Real-time LLM output
+- **Vector Caching**: Efficient similarity search
+- **Batch Processing**: Optimized embedding generation
+- **Memory Management**: Automatic cleanup and rotation
+
+### 📊 **Benchmarks**
+- **Screenshot Processing**: ~2-3 seconds per image
+- **OCR Extraction**: ~1-2 seconds per screenshot
+- **Vector Search**: <100ms for similarity queries
+- **LLM Response**: ~1-3 seconds (depends on Groq API)
+
+---
+
+## 🔧 Troubleshooting
+
+### 🐛 **Common Issues**
+
+#### 🎤 **Voice Input Not Working**
+```bash
+# Check Windows microphone permissions
+# Settings → Privacy & Security → Microphone → Allow desktop apps
+
+# Verify default microphone
+# Settings → System → Sound → Input device
+
+# Enable Windows Speech Recognition
+# Settings → Time & Language → Speech
+```
+
+#### 🔍 **OCR Issues**
+```bash
+# Verify Tesseract installation
+tesseract --version
+
+# Check PATH environment variable
+echo $env:PATH | Select-String "Tesseract"
+
+# Reinstall if needed
+# Download from: https://github.com/UB-Mannheim/tesseract/wiki
+```
+
+#### 🌐 **Connection Errors**
+```bash
+# Check backend server status
+curl http://localhost:8000/
+
+# Verify Groq API key
+# Check .env file configuration
+
+# Test API connectivity
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.groq.com/openai/v1/models
+```
+
+---
+
+## 🔮 Future Enhancements
+
+### 🎯 **Planned Features**
+- 🌐 **Multi-Platform Support** - macOS and Linux compatibility
+- 🔊 **Audio Capture** - Meeting and call transcription
+- 📊 **Analytics Dashboard** - Activity insights and patterns
+- 🤖 **Custom Models** - Local LLM integration
+- 📱 **Mobile App** - iOS and Android clients
+- 🔄 **Cloud Sync** - Cross-device synchronization
+- 🎨 **UI Themes** - Additional theme options
+- 🌍 **Internationalization** - Multi-language support
+
+### 🛠️ **Technical Improvements**
+- ⚡ **Performance Optimization** - Faster processing pipelines
+- 🧠 **Advanced OCR** - Better accuracy with multiple engines
+- 🔍 **Enhanced Search** - Semantic and temporal filtering
+- 📈 **Scalability** - Distributed processing support
+
+---
+
+## 🤝 Contributing
+
 Contributions are welcome! To contribute:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes and submit a pull request.
+
+### 🎯 **Areas for Contribution**
+- 🐛 **Bug Fixes** - Report and fix issues
+- ✨ **New Features** - Implement planned enhancements
+- 📚 **Documentation** - Improve guides and examples
+- 🎨 **UI/UX** - Design improvements
+- 🧪 **Testing** - Add test coverage
+- 🌍 **Localization** - Add language support
+
+### 📝 **Contribution Process**
+1. 🍴 Fork the repository
+2. 🌿 Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. 💾 Commit your changes (`git commit -m 'Add amazing feature'`)
+4. 📤 Push to the branch (`git push origin feature/amazing-feature`)
+5. 🔄 Open a Pull Request
+
 ---
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Author
-**Madhur-Prakash**  
-[GitHub](https://github.com/Madhur-Prakash) | [Medium](https://medium.com/@madhurprakash2005)
+## 👨💻 Author
+
+<div align="center">
+
+**Madhur Prakash**
+
+[![GitHub](https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Madhur-Prakash)
+[![Medium](https://img.shields.io/badge/-Medium-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@madhurprakash2005)
+[![LinkedIn](https://img.shields.io/badge/-LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/madhur-prakash)
+
+*Building the future of intelligent memory systems* 🚀
+
+</div>
 
 ---
+
+<div align="center">
+
+### 🌟 **Star this repository if you found it helpful!** 🌟
+
+![Stars](https://img.shields.io/github/stars/Madhur-Prakash/Recall-AI?style=social)
+![Forks](https://img.shields.io/github/forks/Madhur-Prakash/Recall-AI?style=social)
+![Issues](https://img.shields.io/github/issues/Madhur-Prakash/Recall-AI)
+![License](https://img.shields.io/github/license/Madhur-Prakash/Recall-AI)
+
+**Made with ❤️ and lots of ☕**
+
+</div>
