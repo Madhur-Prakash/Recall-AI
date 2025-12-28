@@ -1,0 +1,41 @@
+FROM python:3.10-slim
+
+WORKDIR /recall_ai
+
+# ✅ Install required system tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    bash \
+    ca-certificates \
+    tar \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# ✅ Install uv using bash (NOT sh)
+RUN curl -LsSf https://astral.sh/uv/install.sh | bash
+
+# ✅ Add uv to PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# ✅ Verify
+RUN uv --version
+
+
+COPY pyproject.toml .
+COPY uv.lock .
+RUN uv sync
+ENV PATH="/recall_ai/.venv/bin:${PATH}"
+
+RUN uv pip install paddlepaddle-gpu==2.6.2 \
+  -f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
+
+COPY requirements.txt .
+
+
+# RUN pip install -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Default CMD just runs the config (compose will override this)
+CMD ["uv", "run", "python", "recall_ai/config/gen_vector_embedding.py"]

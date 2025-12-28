@@ -1,0 +1,33 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]",
+    "concurrent-log-handler",
+    "Pillow",
+    "opencv-python",
+    "numpy",
+    "wmi; sys_platform == 'win32'",
+    "pytesseract",
+    "mss",
+    "screeninfo",
+    "langchain",
+    "langchain-core",
+    "langchain-community",
+    "langchain-huggingface",
+    "langchain-groq",
+    "python-dotenv",
+    "scikit-learn",
+    "torchvision>=0.5",
+    "faiss-cpu",
+    "sentence-transformers",
+    "itsdangerous",
+    "watchdog",
+    "qdrant-client",
+    "cryptography",
+    "paddleocr",
+    "paddlepaddle-gpu==2.6.2"
+]

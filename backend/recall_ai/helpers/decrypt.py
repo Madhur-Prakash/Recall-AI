@@ -5,9 +5,12 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from recall_ai.helpers.utils import setup_logging
+from dotenv import load_dotenv
 
 logger = setup_logging()
+load_dotenv()
 KEY_FILE = "thekey.key"
+IMAGE_DIR = os.getenv("IMAGES_DIR")
 
 def load_key():
     if os.path.exists(KEY_FILE):
@@ -18,7 +21,7 @@ def load_key():
     logger.warning("🔑 Encryption key not found.")
     return None
 
-def decrypt_file_data(text_dir: str = "images_taken/"):
+def decrypt_file_data(text_dir: str = os.getenv("IMAGES_DIR")):
     key = load_key()
     files_to_decrypt = glob.glob(os.path.join(text_dir, "*.enc"))
     logger.info(f"✅ Found {len(files_to_decrypt)} files to decrypt.")

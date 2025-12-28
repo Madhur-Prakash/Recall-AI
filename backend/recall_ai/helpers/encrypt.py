@@ -5,9 +5,12 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from recall_ai.helpers.utils import setup_logging
+from dotenv import load_dotenv
 
 logger = setup_logging()
+load_dotenv()
 KEY_FILE = "thekey.key"
+IMAGE_DIR = os.getenv("IMAGES_DIR")
 
 
 def load_or_create_key():
@@ -23,7 +26,7 @@ def load_or_create_key():
     return key
 
 
-def encrypt_file_data(text_dir: str = "images_taken/"):
+def encrypt_file_data(text_dir: str = IMAGE_DIR):
     key = load_or_create_key()
 
     # Only encrypt files without .enc extension

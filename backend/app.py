@@ -33,4 +33,8 @@ app.include_router(quad_recall, tags=["quad_recall"])
 
 @app.get("/")
 def health_check():
+    return {"message": "RecallAI API is running."}
+
+@app.get("/health")
+def health_check():
     return {"status": "healthy"}

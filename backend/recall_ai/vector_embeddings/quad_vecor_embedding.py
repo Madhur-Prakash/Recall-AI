@@ -10,10 +10,13 @@ from recall_ai.helpers.dependencies import get_embeddings_model
 from recall_ai.helpers.utils import setup_logging
 from recall_ai.helpers.decrypt import decrypt_file_data
 import traceback
+from dotenv import load_dotenv
 
 logger = setup_logging()
+load_dotenv()
+IMAGE_DIR = os.getenv("IMAGES_DIR")
 
-def quad_store_embeddings(text_dir: str = "images_taken/"):
+def quad_store_embeddings(text_dir: str = IMAGE_DIR):
     try:
         enc_files = glob.glob(os.path.join(text_dir, "*.enc"))
         if not enc_files:
@@ -98,7 +101,8 @@ def quad_store_embeddings(text_dir: str = "images_taken/"):
         logger.info(f"🧹 Deleted old embeddings older than {cutoff_ts}: {deleted_count}")
 
         # Reset image directory
-        shutil.rmtree(text_dir)
+        for text_file in text_files:
+            os.remove(text_file)
         os.makedirs(text_dir, exist_ok=True)
         logger.info(f"✅ Cleared and recreated image directory: {text_dir}")
 

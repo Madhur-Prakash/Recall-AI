@@ -25,7 +25,7 @@ monitor_dict = {}
 capture_regions = []
 previous_frames = {}
 logging = setup_logging()
-output_dir = 'images_taken'
+output_dir = os.getenv("IMAGES_DIR")
 os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
 
 

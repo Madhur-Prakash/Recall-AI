@@ -10,11 +10,13 @@ import recall_ai.helpers.dependencies as deps
 from recall_ai.helpers.utils import setup_logging, get_file_creation_age
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
 
+load_dotenv()
 logger = setup_logging()
+IMAGE_DIR = os.getenv("IMAGES_DIR")
 
-
-def store_embeddings(text_dir: str = "images_taken/"):
+def store_embeddings(text_dir: str = IMAGE_DIR):
     try:
         enc_files = glob.glob(os.path.join(text_dir, "*.enc"))
         if not enc_files:
@@ -88,7 +90,8 @@ def store_embeddings(text_dir: str = "images_taken/"):
         # Clear cache so next get_vectorstore() reloads fresh vector store
         deps.vectorstore = None
 
-        shutil.rmtree(text_dir)
+        for text_file in text_files:
+            os.remove(text_file)
         logger.info(f"✅ Cleared image directory {text_dir}")
         os.makedirs(text_dir, exist_ok=True)
         logger.info(f"✅ Created new image directory {text_dir}")

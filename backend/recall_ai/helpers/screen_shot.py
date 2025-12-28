@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 
 logging = setup_logging()
 load_dotenv()
-if os.getenv('DEVELOPMENT_ENV', 'local') != 'docker':  # only run this in local environments
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # OCR
 def ocr_image(image_path):
