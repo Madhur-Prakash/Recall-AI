@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 logger = setup_logging()
 load_dotenv()
 IMAGE_DIR = os.getenv("IMAGES_DIR")
+DEVELOPMENT_ENV = os.getenv('DEVELOPMENT_ENV', 'local')  # Default to 'local' if not set
 
 def quad_store_embeddings(text_dir: str = IMAGE_DIR):
     try:
@@ -55,7 +56,10 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
 
         # Prepare Qdrant
         embeddings_model = get_embeddings_model()
-        client = QdrantClient("localhost", port=6333)
+        if DEVELOPMENT_ENV == "docker":
+                client = QdrantClient("qdrant", port=6333)
+        else:
+            client = QdrantClient("localhost", port=6333)
         collection_name = "img_embeddings"
 
         # Auto-create collection if it doesn't exist

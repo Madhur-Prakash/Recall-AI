@@ -1,5 +1,5 @@
 from glob import glob
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver
 from watchdog.events import FileSystemEventHandler
 import os
 import sys
@@ -19,7 +19,7 @@ fn = time.time() - st
 logging.info(f"Time taken to import quad store_embeddings: {fn:.2f} seconds")
 
 
-TEXT_FILE_LIMIT = 34
+TEXT_FILE_LIMIT = 3
 IMAGE_DIR = os.getenv("IMAGES_DIR")
 
 class MyHandler(FileSystemEventHandler):
@@ -34,13 +34,22 @@ class MyHandler(FileSystemEventHandler):
                     logging.error(f"❌Error occurred while storing embeddings: {res['message']}")
                 logging.info(f"✅ Embeddings stored successfully. Current count: {len(enc_text_files)}")
 
+
+
+# check for already existing directory
+def initial_scan():
+    enc_text_files = glob(os.path.join(IMAGE_DIR, "*.enc"))
+    logging.info(f"🔍 Initial scan found {len(enc_text_files)} encrypted files in {IMAGE_DIR}")
+
+    if len(enc_text_files) >= TEXT_FILE_LIMIT:
+        quad_store_embeddings()
+
 if __name__ == "__main__":
-        # Ensure IMAGE_DIR exists before watching
-    if not os.path.exists(IMAGE_DIR):
-        os.makedirs(IMAGE_DIR, exist_ok=True)
-        logging.info(f"Created missing directory: {IMAGE_DIR}")
-    observer = Observer()
+    if not os.path.isdir(IMAGE_DIR):
+        raise RuntimeError(f"IMAGES_DIR does not exist or is not mounted: {IMAGE_DIR}")
+    observer = PollingObserver(timeout=1)
     observer.schedule(MyHandler(), path=IMAGE_DIR, recursive=False)
+    initial_scan()
     observer.start()
     logging.info(f"👀 Watching for changes in '{IMAGE_DIR}/'...")
 

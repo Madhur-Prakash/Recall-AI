@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
     qdrant:
-        image: qdrant/qdrant
+        image: qdrant/qdrant:v1.16.2
         ports:
             - "6333:6333"
             - "6334:6334"
@@ -14,8 +14,7 @@ services:
             context: .
             dockerfile: Dockerfile.recall
         volumes:
-            - C:/RecallAI/images_taken:/recall_ai/images_taken
-            - .:/recall
+            - C:/recall_ai/images_taken:/recall_ai/images_taken
         ports:
             - "8005:8005"
         depends_on:
@@ -31,7 +30,7 @@ services:
         env_file:
             - .env
         volumes:
-            - C:/RecallAI/images_taken:/recall_ai/images_taken
+            - C:/recall_ai/images_taken:/recall_ai/images_taken
         command: ["python", "recall_ai/config/gen_vector_embedding.py"]
 
     quadrant-store:
@@ -43,5 +42,5 @@ services:
         env_file:
             - .env
         volumes:
-            - C:/RecallAI/images_taken:/recall_ai/images_taken
+            - C:/recall_ai/images_taken:/recall_ai/images_taken
         command: ["python", "recall_ai/config/quad_gen_vector_embedding.py"]
