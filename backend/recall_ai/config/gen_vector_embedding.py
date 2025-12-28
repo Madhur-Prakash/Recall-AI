@@ -36,6 +36,11 @@ class MyHandler(FileSystemEventHandler):
                 logging.info(f"✅ Embeddings stored successfully. Current count: {len(enc_text_files)}")
 
 if __name__ == "__main__":
+    # Ensure IMAGE_DIR exists before watching
+    if not os.path.exists(IMAGE_DIR):
+        os.makedirs(IMAGE_DIR, exist_ok=True)
+        logging.info(f"Created missing directory: {IMAGE_DIR}")
+
     observer = Observer()
     observer.schedule(MyHandler(), path=IMAGE_DIR, recursive=False)
     observer.start()
