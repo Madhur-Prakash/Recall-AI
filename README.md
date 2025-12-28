@@ -51,6 +51,10 @@ Recall AI is an innovative intelligent memory system that captures user activity
 
 ## 🛠️ Technology Stack
 
+<table>
+<tr>
+<td width="50%">
+
 ### 🐍 **Backend Technologies**
 | Technology | Purpose | Version |
 |------------|---------|----------|
@@ -60,8 +64,11 @@ Recall AI is an innovative intelligent memory system that captures user activity
 | ![OpenCV](https://img.shields.io/badge/-OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white) | Image Processing | Latest |
 | ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat&logo=huggingface&logoColor=black) | Embeddings | Transformers |
 | ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat&logo=meta&logoColor=white) | Vector Search | CPU |
-| ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | Client |
+| ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | Latest |
 | ![Groq](https://img.shields.io/badge/-Groq-000000?style=flat&logo=groq&logoColor=white) | LLM Provider | API |
+
+</td>
+<td width="50%">
 
 ### 📱 **Frontend Technologies**
 | Technology | Purpose | Version |
@@ -70,6 +77,14 @@ Recall AI is an innovative intelligent memory system that captures user activity
 | ![Dart](https://img.shields.io/badge/-Dart-0175C2?style=flat&logo=dart&logoColor=white) | Programming Language | 3.0+ |
 | ![Material](https://img.shields.io/badge/-Material_Design-757575?style=flat&logo=material-design&logoColor=white) | Design System | 3.0 |
 | ![Windows](https://img.shields.io/badge/-Windows-0078D4?style=flat&logo=windows&logoColor=white) | Target Platform | 10/11 |
+| ![Glassmorphism](https://img.shields.io/badge/-Glassmorphism-9333EA?style=flat&logo=css3&logoColor=white) | UI Effects | - |
+| ![Speech](https://img.shields.io/badge/-Speech_to_Text-4285F4?style=flat&logo=google&logoColor=white) | Voice Input | - |
+| ![Markdown](https://img.shields.io/badge/-Markdown-000000?style=flat&logo=markdown&logoColor=white) | Rich Text Support | - |
+| ![Animations](https://img.shields.io/badge/-Flutter_Animate-02569B?style=flat&logo=flutter&logoColor=white) | Smooth Animations | - |
+
+</td>
+</tr>
+</table>
 
 ---
 
