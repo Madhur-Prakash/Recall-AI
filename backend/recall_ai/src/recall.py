@@ -49,53 +49,6 @@ Question: {input}
 """)
 
 
-async def get_chat_response(query: str) -> str:
-    """
-    Core chat function that returns a string response.
-    This can be used by both streaming and non-streaming endpoints.
-    """
-    logger.info(f"Processing chat query: {query}")
-    llm = get_llm()
-    embeddings_model = get_embeddings_model()
-    vectorstore = get_vectorstore()
-
-    if vectorstore is None:
-        try:
-            load_path = os.path.join(FAISS_VECTOR_STORE_DIR)
-            vectorstore = FAISS.load_local(load_path, embeddings_model, allow_dangerous_deserialization=True)
-            logger.info("Vector store loaded successfully.")
-        
-        except Exception as e:
-            logger.error(f"Failed to load vector store: {e}")
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector store not found.")
-        
-    try:
-        # Step 1: Embed and retrieve top-k chunks
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 16})
-        query_emb = f"query: {query}"
-        docs = retriever.invoke(query_emb)
-
-        if not docs:
-            logger.warning("No relevant documents found for query.")
-            return "No relevant information found in the context."
-
-        # Step 2: Format the context
-        context = "\n".join([doc.page_content for doc in docs])
-        full_prompt = prompt.format_messages(context=context, input=query)
-
-        # Step 3: Get complete response
-        response = llm.invoke(full_prompt)
-        
-        # Clear cache so next get_vectorstore() reloads fresh vector store
-        deps.vectorstore = None
-
-        return response.content
-
-    except Exception as e:
-        logger.error(f"❌ Chat error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
 @recall.get("/chat", status_code=status.HTTP_200_OK)
 async def chat_with_history(query: str):
     """
