@@ -22,6 +22,7 @@ itsdangerous
 watchdog
 qdrant-client  
 cryptography
+filelock
 -f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
 paddlepaddle-gpu==2.6.2
 paddleocr

@@ -1,7 +1,6 @@
 import datetime
 import os
 import glob
-import shutil
 import time
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_qdrant import QdrantVectorStore
@@ -12,6 +11,7 @@ from recall_ai.helpers.utils import setup_logging
 from recall_ai.helpers.decrypt import decrypt_file_data
 import traceback
 from dotenv import load_dotenv
+from filelock import FileLock
 
 logger = setup_logging()
 load_dotenv()
@@ -35,6 +35,8 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
         if not text_files:
             logger.error("❌ No text files found to process.")
             return {"error": "No text files found to process."}
+        
+        # Read files without lock
         raw_lines = []
         for text_file in text_files:
             try:
@@ -127,12 +129,40 @@ def quad_store_embeddings(text_dir: str = IMAGE_DIR):
         else:
             logger.info("🧹 No old embeddings to delete")
 
-        # Reset image directory
-        for text_file in text_files:
-            if os.path.exists(text_file):
-                os.remove(text_file)
-        os.makedirs(text_dir, exist_ok=True)
-        logger.info(f"✅ Cleared and recreated image directory: {text_dir}")
+        # Mark this service as done
+        done_file = os.path.join(text_dir, ".qdrant_done")
+        with open(done_file, 'w') as f:
+            f.write(str(time.time()))
+        logger.info("✅ Qdrant processing complete")
+
+        # Check if both services are done, then delete files
+        faiss_done = os.path.exists(os.path.join(text_dir, ".faiss_done"))
+        if faiss_done:
+            logger.info("✅ Qdrant service is done. Cleaning up...running in Qdrant block")
+            logger.info("✅ Both services are done. Cleaning up...")
+            lock_file = os.path.join(text_dir, ".cleanup.lock")
+            lock = FileLock(lock_file, timeout=10)
+            try:
+                with lock:
+                    # Delete all txt files and done markers
+                    for text_file in text_files:
+                        try:
+                            if os.path.exists(text_file):
+                                os.remove(text_file)
+                        except Exception as del_err:
+                            logger.warning(f"Could not delete {text_file}: {del_err}")
+                    
+                    # Remove done markers
+                    for marker in [".qdrant_done", ".faiss_done"]:
+                        marker_path = os.path.join(text_dir, marker)
+                        if os.path.exists(marker_path):
+                            os.remove(marker_path)
+                    
+                    logger.info(f"✅ Cleared all text files from {text_dir}")
+            except Exception as lock_err:
+                logger.warning(f"Could not acquire cleanup lock: {lock_err}")
+        else:
+            logger.info("⏳ Waiting for FAISS service to complete before cleanup")
 
         return {"message": "Embeddings stored successfully.", "total_chunks": len(chunked_texts)}
 

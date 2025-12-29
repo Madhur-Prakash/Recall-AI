@@ -116,7 +116,7 @@ async def chat_with_history(query: str):
 
         
         # Clear cache so next get_vectorstore() reloads fresh vector store
-        deps.vectorstore = None
+        deps.faiss_vectorstore = None
 
         return StreamingResponse(stream_generator(), media_type="text/plain")
 
