@@ -31,4 +31,5 @@ dependencies = [
     "paddleocr",
     "paddlepaddle-gpu==2.6.2",
     "langchain-qdrant>=1.1.0",
+    "filelock>=3.20.1",
 ]
