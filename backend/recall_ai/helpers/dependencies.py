@@ -41,7 +41,7 @@ def get_embeddings_model():
 
 
 def get_vectorstore():
-    global faiss_vectorstore
+    global faiss_vectorstore # global tells Python to use the module-level variable for this function instead of creating a new local one
     if faiss_vectorstore is None:
         logger.info("Loading vector store from disk...")
         start = time.time()
