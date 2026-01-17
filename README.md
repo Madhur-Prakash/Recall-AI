@@ -120,14 +120,29 @@ cd backend
 
 # Create virtual environment
 python -m venv venv
-venv\Scripts\activate  # Windows
+venv\Scripts\activate  # activate virtual environment
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Setup environment variables
 copy .env.sample .env
-# Edit .env with your GROQ_API_KEY
+```
+
+### 🔁 Alternative: Using uv (Faster Dependency Management) - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
+```bash
+# Navigate to backend
+cd backend
+
+# create virtual environment
+uv venv
+.\venv\Scripts\activate  # activate virtual environment
+
+# install dependencies
+uv sync
+
+# Setup environment variables
+copy .env.sample .env
 ```
 
 #### 3️⃣ **Frontend Setup**
