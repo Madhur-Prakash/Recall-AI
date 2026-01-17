@@ -281,6 +281,8 @@ RecallAI/
 GROQ_API_KEY="your_groq_api_key_here"
 SESSION_SECRET_KEY="your_session_secret"
 DEVELOPMENT_ENV="local"  # or "docker"
+IMAGES_DIR = "YOUR_IMAGES_DIR"  # Directory path for storing captured images and OCR data
+FAISS_VECTOR_STORE_DIR  = "YOUR_FAISS_VECTOR_STORE_DIR "
 ```
 
 #### 🎛️ **Key Parameters**
