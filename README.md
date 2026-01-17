@@ -384,7 +384,7 @@ Contributions are welcome! To contribute:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
@@ -410,10 +410,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### 🌟 **Star this repository if you found it helpful!** 🌟
 
-![Stars](https://img.shields.io/github/stars/Madhur-Prakash/Recall-AI?style=social)
-![Forks](https://img.shields.io/github/forks/Madhur-Prakash/Recall-AI?style=social)
+![Stars](https://img.shields.io/github/stars/Madhur-Prakash/Recall-AI?)
+![Forks](https://img.shields.io/github/forks/Madhur-Prakash/Recall-AI)
 ![Issues](https://img.shields.io/github/issues/Madhur-Prakash/Recall-AI)
-![License](https://img.shields.io/github/license/Madhur-Prakash/Recall-AI)
 
 **Made with ❤️ and lots of ☕**
 
