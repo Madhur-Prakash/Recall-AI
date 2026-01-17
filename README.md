@@ -19,6 +19,9 @@
 
 Recall AI is an innovative intelligent memory system that captures user activity through periodic screenshots, extracts text using advanced OCR technology, and applies intelligent filters to remove sensitive information. The system encrypts cleaned text and converts it into vector embeddings for semantic search and contextual recall.
 
+🔒 **On-Device Processing First**  
+All screenshot capture, OCR, sensitive data filtering, encryption, and vector embedding generation happen entirely on the user’s device. Only sanitized, encrypted context is used for retrieval. The LLM is accessed via API (Groq) and can be replaced with a local model in future iterations.
+
 **🎯 Key Innovation**: Users can interact with an integrated large language model (LLM) to ask questions and get meaningful responses based on their specific activities, enabling a context-aware, task-focused conversational experience.
 
 ---
@@ -302,13 +305,17 @@ DEVELOPMENT_ENV="local"  # or "docker"
 - **Sensitive Data Filtering**: Automatic removal of passwords, API keys, tokens
 - **Local Processing**: OCR and filtering happen locally
 - **Encrypted Storage**: AES encryption for all text data
-- **No Cloud Dependencies**: Can run completely offline (FAISS mode)
 
 ### 🔐 **Security Features**
 - **Data Encryption**: AES-256 encryption for stored text
-- **Session Management**: Secure session handling
 - **Input Validation**: Comprehensive request validation
 - **Error Handling**: Secure error responses without data leakage
+
+### 🤖 LLM Execution Model
+- OCR, filtering, encryption, and embeddings run fully on-device
+- Groq LLM is currently accessed via API for response generation
+- No raw screenshots or sensitive data are sent to the LLM
+- Architecture supports future on-device / local LLM integration
 
 ---
 
