@@ -151,32 +151,60 @@ flutter build windows --release
 
 ### 🖥️ **Backend Services**
 
-#### 1️⃣ **Start Screen Capture**
-```bash
-cd backend
-python recall_ai/src/mss_screen.py
-```
+## Note:
+You can get the backend up and running using either **Docker Compose** (the easiest method) or by setting it up **manually** for more  control.
 
-#### 2️⃣ **Start Vector Processing**
+> 📌 **Important:**  
+> - For Docker setup, set `DEVELOPMENT_ENV = "docker"` in your `.env` file.  
+> - For local development, either set `DEVELOPMENT_ENV = "local"` or comment out the line entirely.  
+>  
+> This ensures the application loads the correct configuration and prevents environment-related issues.
 
-**For FAISS (Local):**
-```bash
-python recall_ai/config/gen_vector_embedding.py
-```
+> 📢 **Additional Requirement (Very Important):**
+> Even if you are running the backend using Docker, the **screen capture script must be executed directly on your host system**, not inside the container.
 
-**For Qdrant (Cloud):**
-```bash
-# Start Qdrant server first
-docker run -p 6333:6333 qdrant/qdrant
 
-# Then start processing
-python recall_ai/config/quad_gen_vector_embedding.py
-```
+1. **Using Docker Compose (Easiest Method)**
 
-#### 3️⃣ **Start API Server**
-```bash
-uvicorn app:app --reload --host 0.0.0.0 --port 8000
-```
+    #### Start docker services:
+    ```bash
+    docker-compose up --build
+    ```
+    #### Run the following script locally on your machine:
+
+    ```bash
+    python recall_ai/src/mss_screen.py
+    ```
+
+    > This is required because screen capture needs direct access to the host OS display, which Docker containers cannot reliably access.
+
+2. **Manual Setup (More Control)**
+    #### 1️⃣ **Start Screen Capture**
+    ```bash
+    cd backend
+    python recall_ai/src/mss_screen.py
+    ```
+
+    #### 2️⃣ **Start Vector Processing**
+
+    **For FAISS (Local):**
+    ```bash
+    python recall_ai/config/gen_vector_embedding.py
+    ```
+
+    **For Qdrant (Cloud):**
+    ```bash
+    # Start Qdrant server first
+    docker run -p 6333:6333 qdrant/qdrant
+
+    # Then start processing
+    python recall_ai/config/quad_gen_vector_embedding.py
+    ```
+
+    #### 3️⃣ **Start API Server**
+    ```bash
+    uvicorn app:app --reload --host 0.0.0.0 --port 8000
+    ```
 
 ### 📱 **Frontend Application**
 
