@@ -14,7 +14,7 @@ services:
             context: .
             dockerfile: Dockerfile.recall
         volumes:
-            - ./data/img_vector_store:/recall_ai/img_vector_store
+            - ./data/img_vector_store:${FAISS_VECTOR_STORE_DIR}
         ports:
             - "8005:8005"
         depends_on:
@@ -30,8 +30,8 @@ services:
         env_file:
             - .env
         volumes:
-            - ./data/images_taken:/recall_ai/images_taken
-            - ./data/img_vector_store:/recall_ai/img_vector_store
+            - ./data/images_taken:${IMAGES_DIR}
+            - ./data/img_vector_store:${FAISS_VECTOR_STORE_DIR}
         command: ["python", "recall_ai/config/gen_vector_embedding.py"]
 
     quadrant-store:
@@ -43,5 +43,5 @@ services:
         env_file:
             - .env
         volumes:
-            - ./data/images_taken:/recall_ai/images_taken
+            - ./data/images_taken:${IMAGES_DIR}
         command: ["python", "recall_ai/config/quad_gen_vector_embedding.py"]
