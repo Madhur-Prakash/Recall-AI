@@ -21,7 +21,6 @@ Recall AI is an innovative intelligent memory system that captures user activity
 
 🔒 **On-Device Processing First**  
 All screenshot capture, OCR, sensitive data filtering, encryption, and vector embedding storage happen entirely on the user’s device. Encrypted text files are processed in configurable batches, with the batch limit managed through a `.env` file. Once the threshold is reached, the system securely decrypts the batch locally, generates vector embeddings, and stores them on-device for semantic retrieval.The LLM is accessed via API (Groq) and can be replaced with a local model in future iterations. 
-This architecture ensures that raw screenshots and sensitive data never leave the user’s device, prioritizing privacy and security while still enabling powerful contextual recall capabilities.
 
 **🎯 Key Innovation**: Users can interact with an integrated large language model (LLM) to ask questions and get meaningful responses based on their specific activities, enabling a context-aware, task-focused conversational experience.
 
