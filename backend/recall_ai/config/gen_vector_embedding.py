@@ -23,7 +23,9 @@ IMAGE_DIR = os.getenv("IMAGES_DIR")
 if not IMAGE_DIR:
     raise RuntimeError("IMAGES_DIR env variable is not set inside container")
 
-TEXT_FILE_LIMIT = 3
+TEXT_FILE_LIMIT = int(os.getenv("TEXT_FILE_LIMIT"))
+if not TEXT_FILE_LIMIT:
+    raise RuntimeError("TEXT_FILE_LIMIT env variable is not set inside container")
 
 class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -33,6 +35,7 @@ class MyHandler(FileSystemEventHandler):
                 logging.info(f"🔄️Current encrypted text files count: {len(enc_text_files)}")
 
             if len(enc_text_files) >= TEXT_FILE_LIMIT:
+                logging.info(f"⚡ Threshold reached: {len(enc_text_files)} encrypted files. Triggering embedding generation...")
                 res = store_embeddings()
                 if(res['message'] != "Embeddings stored successfully."):
                     logging.error(f"❌Error occurred while storing embeddings: {res['message']}")
@@ -45,6 +48,7 @@ def initial_scan():
     logging.info(f"🔍 Initial scan found {len(enc_text_files)} encrypted files in {IMAGE_DIR}")
 
     if len(enc_text_files) >= TEXT_FILE_LIMIT:
+        logging.info(f"⚡ Threshold reached: {len(enc_text_files)} encrypted files. Triggering embedding generation...")
         store_embeddings()
 
 if __name__ == "__main__":
