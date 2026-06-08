@@ -213,7 +213,7 @@ You can get the backend up and running using either **Docker Compose** (the easi
     **For Qdrant (Cloud):**
     ```bash
     # Start Qdrant server first
-    docker run -p 6333:6333 qdrant/qdrant
+    docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.16.2
 
     # Then start processing
     python recall_ai/config/quad_gen_vector_embedding.py
