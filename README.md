@@ -1,6 +1,6 @@
 <div align="center">
 
-# Recall AI
+# 🧠 Recall AI
 
 **An Intelligent Memory System — FastAPI Backend · Flutter Desktop Frontend**
 
