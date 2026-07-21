@@ -315,6 +315,7 @@ GROQ_API_KEY="your_groq_api_key_here"
 SESSION_SECRET_KEY="your_session_secret"
 DEVELOPMENT_ENV="local"              # or "docker"
 IMAGES_DIR="YOUR_IMAGES_DIR"
+TEXT_FILE_LIMIT=34 # Maximum number of text files to process in a batch
 FAISS_VECTOR_STORE_DIR="YOUR_FAISS_VECTOR_STORE_DIR"
 ```
 
