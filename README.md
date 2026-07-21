@@ -318,14 +318,26 @@ RecallAI/
 ### Environment Variables (`.env`)
 
 ```env
-OLLAMA_MODEL="qwen3:8b"                # On-device reasoning model (pull it first: ollama pull qwen3:8b)
+OLLAMA_MODEL="qwen3:8b"                # On-device model served by Ollama (pull it first: ollama pull qwen3:8b)
 OLLAMA_BASE_URL="http://localhost:11434"  # Use http://host.docker.internal:11434 when the app runs in Docker
+# OLLAMA_REASONING="true"              # Optional — see note below. Leave unset for models without thinking support.
 SESSION_SECRET_KEY="your_session_secret"
 DEVELOPMENT_ENV="local"              # or "docker"
 IMAGES_DIR="YOUR_IMAGES_DIR"
 TEXT_FILE_LIMIT=34 # Maximum number of text files to process in a batch
 FAISS_VECTOR_STORE_DIR="YOUR_FAISS_VECTOR_STORE_DIR"
 ```
+
+### LLM (Ollama) Options
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OLLAMA_MODEL` | `qwen3:8b` | Any installed Ollama model. Swap freely (e.g. `deepseek-r1:8b`, `llama3.1:8b`, `smallthinker`). |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama daemon URL. Use `http://host.docker.internal:11434` in Docker. |
+| `OLLAMA_REASONING` | *(unset)* | Opt-in "thinking" mode. Leave **unset** for any model — it works everywhere. Set to `true` **only** for reasoning models that support it (`qwen3`, `deepseek-r1`). Forcing it on a model without thinking support makes Ollama return `400 "does not support thinking"`. |
+
+> **Reasoning output stays clean automatically.** Regardless of `OLLAMA_REASONING`, any inline `<think>…</think>`
+> chain-of-thought a reasoning model emits is stripped from the streamed response, so the chat shows only the final answer.
 
 ### Key Parameters
 
@@ -359,7 +371,8 @@ FAISS_VECTOR_STORE_DIR="YOUR_FAISS_VECTOR_STORE_DIR"
 
 - OCR, filtering, encryption, and embeddings run fully on-device
 - The LLM runs fully on-device via Ollama — no screenshots, context, or queries are ever sent off the machine
-- Any Ollama model can be used; defaults to the `qwen3:8b` reasoning model
+- Any Ollama model works; defaults to the `qwen3:8b` reasoning model (configurable via `OLLAMA_MODEL`)
+- Reasoning models are supported optionally (`OLLAMA_REASONING`), and their `<think>` traces are stripped so only the answer is returned
 
 ---
 

@@ -7,7 +7,7 @@ from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from langchain_huggingface import HuggingFaceEmbeddings
-from recall_ai.helpers.utils import setup_logging
+from recall_ai.helpers.utils import setup_logging, truthy as _truthy
 
 
 load_dotenv()
@@ -30,12 +30,15 @@ def get_llm():
         'OLLAMA_BASE_URL',
         'http://host.docker.internal:11434' if DEVELOPMENT_ENV == 'docker' else 'http://localhost:11434',
     )
-    llm = ChatOllama(
-        model=model_name,
-        base_url=base_url,
-        reasoning=True,   # keep the model's thinking on the reasoning channel; only the final answer streams as chunk.content
-        temperature=0.3,
-    )
+    kwargs = dict(model=model_name, base_url=base_url, temperature=0.3)
+    # `reasoning` is opt-in: only forward it when OLLAMA_REASONING is explicitly set.
+    # Forcing it on a model that can't think makes Ollama return 400 "does not support thinking",
+    # so by default we leave it unset and let each model behave natively. Inline <think> output
+    # is stripped downstream in the streaming layer, so answers stay clean either way.
+    reasoning_env = os.getenv('OLLAMA_REASONING')
+    if reasoning_env is not None:
+        kwargs['reasoning'] = _truthy(reasoning_env)
+    llm = ChatOllama(**kwargs)
     logger.info(f"Ollama LLM '{model_name}' initialized in {time.time() - start:.2f} seconds")
     return llm
 

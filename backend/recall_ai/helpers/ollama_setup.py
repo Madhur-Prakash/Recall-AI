@@ -15,6 +15,7 @@ Behaviour by situation:
 
 import os
 import sys
+from recall_ai.helpers.utils import truthy as _truthy
 
 # Keep console output safe on legacy Windows code pages (cp1252, etc.).
 for _stream in (sys.stdout, sys.stderr):
@@ -22,10 +23,6 @@ for _stream in (sys.stdout, sys.stderr):
         _stream.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
-
-
-def _truthy(value) -> bool:
-    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
 def _installed_model_names(client) -> list:

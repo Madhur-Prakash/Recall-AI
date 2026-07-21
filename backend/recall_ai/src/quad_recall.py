@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from fastapi import status, HTTPException, APIRouter
 from qdrant_client import QdrantClient
 from recall_ai.helpers.dependencies import get_quad_vectorstore, get_llm
-from recall_ai.helpers.utils import setup_logging
+from recall_ai.helpers.utils import setup_logging, ThinkStripper
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv 
 
@@ -82,11 +82,14 @@ async def chat_with_quad_history(query: str):
         full_prompt = prompt.format_messages(context=context, input=query)
 
         async def stream_generator():
+            stripper = ThinkStripper()  # hide any <think>...</think> reasoning from the client
             try:
                 if hasattr(llm, 'astream'):
                     logger.info("Using async streaming for LLM response.")
                     async for chunk in llm.astream(full_prompt):
-                        yield chunk.content
+                        piece = stripper.feed(chunk.content or "")
+                        if piece:
+                            yield piece
                 else:
                     logger.info("Using sync streaming for LLM response.")
                     loop = asyncio.get_running_loop()
@@ -103,8 +106,14 @@ async def chat_with_quad_history(query: str):
                         chunk = await loop.run_in_executor(None, lambda: next(iterator, None))
                         if chunk is None:
                             break
-                        yield chunk
+                        piece = stripper.feed(chunk or "")
+                        if piece:
+                            yield piece
                         await asyncio.sleep(0.001)
+
+                tail = stripper.flush()
+                if tail:
+                    yield tail
 
             except Exception as e:
                 logger.error(f"Error during LLM streaming: {e}")
