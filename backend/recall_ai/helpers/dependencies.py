@@ -5,7 +5,7 @@ import time
 from functools import cache
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from langchain_huggingface import HuggingFaceEmbeddings
 from recall_ai.helpers.utils import setup_logging
 
@@ -21,13 +21,22 @@ qdrant_vectorstore = None
 
 @cache
 def get_llm():
-    logger.info("Initializing LLM model...")
+    logger.info("Initializing on-device Ollama LLM...")
     start = time.time()
-    groq_api_key = os.getenv('GROQ_API_KEY')
-    if not groq_api_key:
-        raise RuntimeError("❌ GROQ_API_KEY is missing in environment")
-    llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
-    logger.info(f"LLM initialized in {time.time() - start:.2f} seconds")
+    # Default to a strong on-device reasoning model; override with OLLAMA_MODEL.
+    model_name = os.getenv('OLLAMA_MODEL', 'qwen3:8b')
+    # When running inside Docker, reach the Ollama daemon on the host machine.
+    base_url = os.getenv(
+        'OLLAMA_BASE_URL',
+        'http://host.docker.internal:11434' if DEVELOPMENT_ENV == 'docker' else 'http://localhost:11434',
+    )
+    llm = ChatOllama(
+        model=model_name,
+        base_url=base_url,
+        reasoning=True,   # keep the model's thinking on the reasoning channel; only the final answer streams as chunk.content
+        temperature=0.3,
+    )
+    logger.info(f"Ollama LLM '{model_name}' initialized in {time.time() - start:.2f} seconds")
     return llm
 
 

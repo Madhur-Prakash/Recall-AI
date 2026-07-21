@@ -18,7 +18,7 @@ dependencies = [
     "langchain-core",
     "langchain-community",
     "langchain-huggingface",
-    "langchain-groq",
+    "langchain-ollama",
     "python-dotenv",
     "scikit-learn",
     "torchvision>=0.5",

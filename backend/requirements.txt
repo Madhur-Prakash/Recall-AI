@@ -8,7 +8,7 @@ pytesseract
 mss
 screeninfo
 langchain-huggingface
-langchain_groq
+langchain-ollama
 langchain
 python-dotenv
 langchain_community

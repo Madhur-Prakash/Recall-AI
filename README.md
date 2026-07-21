@@ -9,7 +9,7 @@
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Tesseract](https://img.shields.io/badge/OCR-Tesseract-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://github.com/tesseract-ocr/tesseract)
 [![Vector DB](https://img.shields.io/badge/Vector_DB-FAISS_+_Qdrant-FF6B6B?style=for-the-badge)](#)
-[![Groq](https://img.shields.io/badge/LLM-Groq-000000?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
+[![Ollama](https://img.shields.io/badge/LLM-Ollama_(On--Device)-000000?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.com)
 
 [![Stars](https://img.shields.io/github/stars/Madhur-Prakash/Recall-AI?style=flat-square)](https://github.com/Madhur-Prakash/Recall-AI/stargazers)
 [![Forks](https://img.shields.io/github/forks/Madhur-Prakash/Recall-AI?style=flat-square)](https://github.com/Madhur-Prakash/Recall-AI/network)
@@ -25,7 +25,7 @@
 Recall AI is an intelligent memory system that captures user activity through periodic screenshots, extracts text via OCR, and applies intelligent filters to remove sensitive information. The system encrypts cleaned text and manages semantic retrieval using on-device vector embeddings for contextual recall.
 
 > **On-Device Processing First**
-> All screenshot capture, OCR, sensitive data filtering, encryption, and vector embedding storage happen entirely on the user's device. Encrypted text files are processed in configurable batches. Once the threshold is reached, the system decrypts the batch locally, generates vector embeddings, and stores them on-device for semantic retrieval. The LLM is accessed via API (Groq) and can be replaced with a local model in future iterations.
+> All screenshot capture, OCR, sensitive data filtering, encryption, and vector embedding storage happen entirely on the user's device. Encrypted text files are processed in configurable batches. Once the threshold is reached, the system decrypts the batch locally, generates vector embeddings, and stores them on-device for semantic retrieval. The LLM also runs fully on-device via [Ollama](https://ollama.com) — no data ever leaves your machine.
 
 **Key Innovation:** Users interact with an integrated LLM to ask questions and get contextual answers based on their specific activities — enabling a context-aware, task-focused conversational experience.
 
@@ -43,7 +43,7 @@ Recall AI is an intelligent memory system that captures user activity through pe
 | ![Encryption](https://img.shields.io/badge/AES_Encryption-555?style=flat-square&logo=lock) | AES encryption for all stored text |
 | ![Embeddings](https://img.shields.io/badge/Vector_Embeddings-555?style=flat-square&logo=huggingface) | Semantic search with HuggingFace transformers |
 | ![Storage](https://img.shields.io/badge/Dual_Storage-555?style=flat-square) | FAISS (local) & Qdrant (scalable) vector databases |
-| ![RAG](https://img.shields.io/badge/RAG_Pipeline-555?style=flat-square&logo=groq) | Retrieval-Augmented Generation with Groq LLM |
+| ![RAG](https://img.shields.io/badge/RAG_Pipeline-555?style=flat-square&logo=ollama) | Retrieval-Augmented Generation with on-device Ollama LLM |
 | ![Streaming](https://img.shields.io/badge/Real--Time_Streaming-555?style=flat-square) | Async/sync model streaming responses |
 | ![Watchdog](https://img.shields.io/badge/File_Watching-555?style=flat-square) | Automatic processing with Watchdog |
 
@@ -79,7 +79,7 @@ Recall AI is an intelligent memory system that captures user activity through pe
 | ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FFD21E?style=flat&logo=huggingface&logoColor=black) | Embeddings | Transformers |
 | ![FAISS](https://img.shields.io/badge/-FAISS-FF6B6B?style=flat&logo=meta&logoColor=white) | Vector Search | CPU |
 | ![Qdrant](https://img.shields.io/badge/-Qdrant-DC382D?style=flat&logo=qdrant&logoColor=white) | Vector Database | Latest |
-| ![Groq](https://img.shields.io/badge/-Groq-000000?style=flat&logo=groq&logoColor=white) | LLM Provider | API |
+| ![Ollama](https://img.shields.io/badge/-Ollama-000000?style=flat&logo=ollama&logoColor=white) | On-Device LLM | qwen3:8b |
 
 </td>
 <td width="50%">
@@ -110,7 +110,7 @@ Recall AI is an intelligent memory system that captures user activity through pe
 
 - ![Python](https://img.shields.io/badge/-Python_3.8+-3776AB?style=flat&logo=python&logoColor=white)
 - ![Tesseract](https://img.shields.io/badge/-Tesseract_OCR-4285F4?style=flat&logo=google&logoColor=white) — [Download](https://github.com/UB-Mannheim/tesseract/wiki)
-- ![Groq](https://img.shields.io/badge/-Groq_API_Key-000000?style=flat&logo=groq&logoColor=white) — [Get API Key](https://console.groq.com)
+- ![Ollama](https://img.shields.io/badge/-Ollama-000000?style=flat&logo=ollama&logoColor=white) — [Install Ollama](https://ollama.com/download), then pull the model: `ollama pull qwen3:8b`
 
 **Frontend**
 
@@ -311,7 +311,8 @@ RecallAI/
 ### Environment Variables (`.env`)
 
 ```env
-GROQ_API_KEY="your_groq_api_key_here"
+OLLAMA_MODEL="qwen3:8b"                # On-device reasoning model (pull it first: ollama pull qwen3:8b)
+OLLAMA_BASE_URL="http://localhost:11434"  # Use http://host.docker.internal:11434 when the app runs in Docker
 SESSION_SECRET_KEY="your_session_secret"
 DEVELOPMENT_ENV="local"              # or "docker"
 IMAGES_DIR="YOUR_IMAGES_DIR"
@@ -350,8 +351,8 @@ FAISS_VECTOR_STORE_DIR="YOUR_FAISS_VECTOR_STORE_DIR"
 ### LLM Execution Model
 
 - OCR, filtering, encryption, and embeddings run fully on-device
-- Groq LLM is accessed via API only for response generation — no raw screenshots or sensitive data are sent
-- Architecture supports future local LLM integration
+- The LLM runs fully on-device via Ollama — no screenshots, context, or queries are ever sent off the machine
+- Any Ollama model can be used; defaults to the `qwen3:8b` reasoning model
 
 ---
 
@@ -362,7 +363,7 @@ FAISS_VECTOR_STORE_DIR="YOUR_FAISS_VECTOR_STORE_DIR"
 | Screenshot processing | ~2–3 seconds / image |
 | OCR extraction | ~1–2 seconds / screenshot |
 | Vector search | < 100 ms |
-| LLM response | ~1–3 seconds (Groq API) |
+| LLM response | on-device (varies by model & hardware) |
 
 **Optimizations:** async I/O · streaming responses · vector caching · batch embedding generation · automatic memory rotation
 
@@ -390,8 +391,11 @@ echo $env:PATH | Select-String "Tesseract"
 
 ```bash
 curl http://localhost:8000/
-# Check .env for correct GROQ_API_KEY
-curl -H "Authorization: Bearer YOUR_API_KEY" https://api.groq.com/openai/v1/models
+# Verify the Ollama daemon is running and the model is pulled
+ollama list                    # should show OLLAMA_MODEL (default: qwen3:8b)
+curl http://localhost:11434/api/tags   # Ollama should respond
+# If the model is missing:
+ollama pull qwen3:8b
 ```
 
 ---
@@ -403,7 +407,6 @@ curl -H "Authorization: Bearer YOUR_API_KEY" https://api.groq.com/openai/v1/mode
 - Multi-platform support — macOS and Linux
 - Audio capture — meeting and call transcription
 - Analytics dashboard — activity insights
-- Local LLM integration
 - Mobile clients — iOS and Android
 - Cross-device cloud sync
 - Internationalization
