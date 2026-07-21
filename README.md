@@ -20,6 +20,8 @@
 
 ---
 
+https://github.com/user-attachments/assets/1c812be2-ba5a-4348-b56a-76f534ae5984
+
 ## Overview
 
 Recall AI is an intelligent memory system that captures user activity through periodic screenshots, extracts text via OCR, and applies intelligent filters to remove sensitive information. The system encrypts cleaned text and manages semantic retrieval using on-device vector embeddings for contextual recall.
