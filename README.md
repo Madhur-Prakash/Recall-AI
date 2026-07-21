@@ -242,8 +242,15 @@ docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant
 python recall_ai/config/quad_gen_vector_embedding.py
 
 # 3. Start API server
+#    On startup it checks the OLLAMA_MODEL from .env and, if missing, prompts
+#    you to download it (pulling via Ollama) before the server comes up.
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
+
+> **First launch:** if the configured `OLLAMA_MODEL` (default `qwen3:8b`) isn't present, startup asks
+> `Download it now? [Y/n]` and pulls it via Ollama before the server boots. Make sure the Ollama daemon
+> is running (`ollama serve`). In non-interactive setups (Docker/CI) the prompt is skipped — set
+> `OLLAMA_AUTO_PULL=true` to download automatically, otherwise pull it yourself with `ollama pull qwen3:8b`.
 
 ### Frontend
 

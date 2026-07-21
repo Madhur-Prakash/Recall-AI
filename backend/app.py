@@ -1,6 +1,14 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from dotenv import load_dotenv
+load_dotenv()
+
+# Pre-flight: verify (and optionally download) the on-device Ollama model from
+# .env before the app loads, so `uvicorn app:app` alone runs the check.
+from recall_ai.helpers.ollama_setup import ensure_ollama_model
+ensure_ollama_model()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
